@@ -20,6 +20,10 @@ License (COPYING) along with this library; if not, see:
 */
 #include "eh-printf.h"
 
+/*
+Returns the number of bytes in the string, excluding the terminating
+null byte ('\0').
+*/
 static size_t eh_strlen(const char *str)
 {
 	size_t i;
@@ -31,26 +35,38 @@ static size_t eh_strlen(const char *str)
 	return i;
 }
 
-static char *eh_strncpyl(char *dest, const char *src, size_t size, size_t *len)
+/*
+Copies at most n bytes of string pointed to by src, including the
+terminating null byte ('\0'), to the buffer pointed to by dest.  If
+there is no null byte among the first dest_size bytes, the string placed
+in dest will not be null-terminated.
+
+The number of bytes written to src (excluding the null terminator) is
+added to the value pointed to by the dest_written parameter.
+
+Returns a pointer to  the destination string dest.
+*/
+static char *eh_strncpyl(char *dest, const char *src, size_t dest_size,
+			 size_t *dest_written)
 {
 	size_t i;
 
 	/* huh? */
-	if (dest == NULL || !size) {
+	if (dest == NULL || !dest_size) {
 		return NULL;
 	}
 
 	/* char-by-char copy */
-	for (i = 0; i < size && src[i] != '\0'; i++) {
+	for (i = 0; i < dest_size && src[i] != '\0'; i++) {
 		dest[i] = src[i];
 	}
 
 	/* NULL-terminate the string if room */
-	if (i < size) {
+	if (i < dest_size) {
 		dest[i] = '\0';
 	}
 
-	*len += i;
+	*dest_written += i;
 	return dest;
 }
 
@@ -154,6 +170,7 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 	/* return characters written, excluding null character */
 	return j;
 }
+
 #undef EH_LONG_BASE2_ASCII_BUF_SIZE
 
 int eh_snprintf(char *str, size_t size, const char *format, ...)
