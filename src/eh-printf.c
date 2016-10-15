@@ -36,8 +36,8 @@ static size_t eh_strlen(const char *str)
 }
 
 /*
-Copies at most n bytes of string pointed to by src, including the
-terminating null byte ('\0'), to the buffer pointed to by dest.  If
+Copies at most dest_size bytes of string pointed to by src, including
+the terminating null byte ('\0'), to the buffer pointed to by dest.  If
 there is no null byte among the first dest_size bytes, the string placed
 in dest will not be null-terminated.
 
@@ -129,7 +129,7 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 		if (d < 10) {
 			reversed_buf[i++] = '0' + d;
 		} else {
-			reversed_buf[i++] = 'A' + d;
+			reversed_buf[i++] = 'A' + (d - 10);
 		}
 	}
 
