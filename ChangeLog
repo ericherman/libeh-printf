@@ -1,3 +1,13 @@
 2016-10-15  Eric Herman <eric@freesa.org>
 
+	an initial sketch of a sprintf for embedded
+
+	* src/eh-printf.h: created the first API
+	* src/eh-printf.c: initial impl
+	* tests/test-simple.c: a dumb test
+	* configure.ac: basic autotools configure
+	* Makefile.am: basic autotools Makefile
+	* misc/pre-tidy.patch: prevent Gnu indent from indenting extra
+	* .gitignore: added test-simple
+	* README: add explanation and build instructions
 	* ChangeLog: Freshly created ChangeLog.

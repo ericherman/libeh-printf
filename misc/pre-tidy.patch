@@ -1,0 +1,25 @@
+--- orig/src/eh-printf.h
++++ tidy/src/eh-printf.h
+@@ -22,9 +22,11 @@ License (COPYING) along with this library; if not, see:
+ #ifndef EH_PRINTF
+ #define EH_PRINTF
+ 
++/*
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
++*/
+ 
+ #include <stddef.h>
+ #include <stdarg.h>
+@@ -33,8 +35,10 @@ int eh_snprintf(char *str, size_t size, const char *format, ...);
+ 
+ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap);
+ 
++/*
+ #ifdef __cplusplus
+ }
+ #endif
++*/
+ 
+ #endif /* EH_PRINTF */

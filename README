@@ -1,16 +1,40 @@
-A version of sprintf for including in embedded applications.
+eh-printf - A version of sprintf for embedded applications
 Copyright (C) 2016 Eric Herman
+
+I discovered that adding the normal glibc sprintf to my embedded
+projects was resulting in a firmware which was too large. This
+respository is a sandbox for playing with the idea of re-implementing
+sprintf from scratch in hopes that I will have fun, learn a few things,
+and maybe even have a useful (if incomplete and inefficient) version of
+sprintf which will have a smaller firmware footprint. We shall see.
+
+
+Dependencies
+------------
+The "make" and "make install" targets have no external dependencies.
+
+The "make check" target depends upon libecheck
+  https://github.com/ericherman/libecheck
+
+
+Packaging
+---------
+autoreconf -iv &&
+ ./configure &&
+ make &&
+ make distcheck &&
+ echo "Success."
 
 
 License
 -------
-This library is free software; you can redistribute it and/or
+This work is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
 version 2.1 of the License, or (at your option) any later
 version.
 
-This library is distributed in the hope that it will be useful,
+This work is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
