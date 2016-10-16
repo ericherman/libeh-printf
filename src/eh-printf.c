@@ -75,10 +75,10 @@ static char *eh_strncpyl(char *dest, const char *src, size_t dest_size,
 }
 
 enum eh_base {
-	eh_binary,
-	eh_octal,
-	eh_decimal,
-	eh_hex
+	eh_binary = 2,
+	eh_octal = 8,
+	eh_decimal = 10,
+	eh_hex = 16
 };
 
 #define EH_LONG_BASE2_ASCII_BUF_SIZE ((8 * sizeof(unsigned long int))+1)
@@ -111,20 +111,7 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 	}
 	v = ((unsigned long int)val);
 
-	switch (base) {
-	case eh_binary:
-		b = 2;
-		break;
-	case eh_octal:
-		b = 8;
-		break;
-	case eh_decimal:
-		b = 10;
-		break;
-	case eh_hex:
-		b = 16;
-		break;
-	}
+	b = (unsigned) base;
 
 	i = 0;
 	while (v > 0) {
