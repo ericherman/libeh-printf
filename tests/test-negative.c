@@ -1,5 +1,5 @@
 /*
-test-hex-int.c
+test-negative.c
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
