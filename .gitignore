@@ -1,6 +1,7 @@
 test-simple
 test-hex-int
 test-negative
+test-pct5d
 
 ###################
 # backup files

@@ -7,6 +7,7 @@ TESTS=$(check_PROGRAMS)
 check_PROGRAMS=\
  test-hex-int \
  test-negative \
+ test-pct5d \
  test-simple
 
 T_COMMON_LDADD=libeh-printf.la -lecheck
@@ -19,6 +20,9 @@ test_hex_int_LDADD=$(T_COMMON_LDADD)
 
 test_negative_SOURCES=tests/test-negative.c src/eh-printf.h
 test_negative_LDADD=$(T_COMMON_LDADD)
+
+test_pct5d_SOURCES=tests/test-pct5d.c src/eh-printf.h
+test_pct5d_LDADD=$(T_COMMON_LDADD)
 
 ACLOCAL_AMFLAGS=-I m4 --install
 
@@ -46,3 +50,4 @@ valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind ./test-simple
 	libtool --mode=execute valgrind ./test-hex-int
 	libtool --mode=execute valgrind ./test-negative
+	libtool --mode=execute valgrind ./test-pct5d

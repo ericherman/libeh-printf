@@ -222,6 +222,28 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				special = 0;
 				break;
 
+			case '0':
+				if(field_size == 0) {
+					zero_padded = 1;
+					++fmt_idx;
+					break;
+				} else {
+					/* fall-through */
+				}
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+				field_size *= 10;
+				field_size += format[fmt_idx] - '0';
+				++fmt_idx;
+				break;
+
 			case 'l':
 				++fmt_idx;
 				++special;	/* long long int ? */

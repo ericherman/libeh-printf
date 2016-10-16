@@ -2,9 +2,10 @@
 
 	Add tests, and supporting code
 
-	* src/eh-printf.c: support "%X", fix negative
+	* src/eh-printf.c: support "%X", fix negative, "%5d", "%050d"
 	* tests/test-hex-int.c: supporting text for "%X"
 	* tests/test-negative.c: test a negative val
+	* tests/test-pct5d.c: test padding
 
 2016-10-15  Eric Herman <eric@freesa.org>
 
