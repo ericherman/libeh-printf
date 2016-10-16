@@ -70,7 +70,10 @@ static char *eh_strncpyl(char *dest, const char *src, size_t dest_size,
 		dest[i] = '\0';
 	}
 
-	*dest_written += i;
+	if (dest_written != NULL) {
+		*dest_written += i;
+	}
+
 	return dest;
 }
 
