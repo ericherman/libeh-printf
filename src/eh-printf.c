@@ -87,7 +87,7 @@ enum eh_base {
 #define EH_LONG_BASE2_ASCII_BUF_SIZE ((8 * sizeof(unsigned long int))+1)
 static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 			       unsigned char zero_padded, size_t field_size,
-			       int val)
+			       long val)
 {
 	size_t i, j;
 	unsigned char was_negative;
@@ -114,7 +114,7 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 	}
 	v = ((unsigned long int)val);
 
-	b = (unsigned) base;
+	b = ((unsigned long int)base);
 
 	i = 0;
 	while (v > 0) {
