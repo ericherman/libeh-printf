@@ -1,5 +1,6 @@
 test-simple
 test-hex-int
+test-negative
 
 ###################
 # backup files

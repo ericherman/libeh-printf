@@ -2,8 +2,9 @@
 
 	Add tests, and supporting code
 
-	* src/eh-printf.c: support "%X"
+	* src/eh-printf.c: support "%X", fix negative
 	* tests/test-hex-int.c: supporting text for "%X"
+	* tests/test-negative.c: test a negative val
 
 2016-10-15  Eric Herman <eric@freesa.org>
 

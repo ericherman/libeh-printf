@@ -153,7 +153,11 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 		dest[j++] = (zero_padded) ? '0' : ' ';
 	}
 	if (!zero_padded && base == eh_decimal && was_negative) {
-		dest[j - 1] = '-';
+		if (j > 0) {
+			dest[j - 1] = '-';
+		} else {
+			dest[j++] = '-';
+		}
 	}
 
 	/* walk the reversed_buf backwards */
@@ -232,7 +236,7 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 					l = d;
 				}
 				eh_long_to_ascii(buf, 100, eh_hex,
-					zero_padded, field_size, l);
+						 zero_padded, field_size, l);
 				eh_strncpyl((str + used), buf, (size - used),
 					    &used);
 				++fmt_idx;

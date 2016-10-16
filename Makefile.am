@@ -6,6 +6,7 @@ include_HEADERS=src/eh-printf.h
 TESTS=$(check_PROGRAMS)
 check_PROGRAMS=\
  test-hex-int \
+ test-negative \
  test-simple
 
 T_COMMON_LDADD=libeh-printf.la -lecheck
@@ -15,6 +16,9 @@ test_simple_LDADD=$(T_COMMON_LDADD)
 
 test_hex_int_SOURCES=tests/test-hex-int.c src/eh-printf.h
 test_hex_int_LDADD=$(T_COMMON_LDADD)
+
+test_negative_SOURCES=tests/test-negative.c src/eh-printf.h
+test_negative_LDADD=$(T_COMMON_LDADD)
 
 ACLOCAL_AMFLAGS=-I m4 --install
 
@@ -41,3 +45,4 @@ spotless: clean
 valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind ./test-simple
 	libtool --mode=execute valgrind ./test-hex-int
+	libtool --mode=execute valgrind ./test-negative
