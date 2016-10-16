@@ -137,7 +137,10 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 		}
 	}
 
-	if (field_size < 1 || field_size < i) {
+	/* If the field size was not specified (zero), or the value is
+	   wider than the specified field width, then the field is
+	   expanded to contain the value. */
+	if (field_size < i) {
 		field_size = i;
 	}
 
