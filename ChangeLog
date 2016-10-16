@@ -1,3 +1,10 @@
+2016-10-16  Eric Herman <eric@freesa.org>
+
+	Add tests, and supporting code
+
+	* src/eh-printf.c: support "%X"
+	* tests/test-hex-int.c: supporting text for "%X"
+
 2016-10-15  Eric Herman <eric@freesa.org>
 
 	an initial sketch of a sprintf for embedded

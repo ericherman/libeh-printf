@@ -223,6 +223,22 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				++special;	/* long long int ? */
 				break;
 
+			case 'x':
+			case 'X':
+				if (special > 1) {
+					l = va_arg(ap, long int);
+				} else {
+					d = va_arg(ap, int);
+					l = d;
+				}
+				eh_long_to_ascii(buf, 100, eh_hex,
+					zero_padded, field_size, l);
+				eh_strncpyl((str + used), buf, (size - used),
+					    &used);
+				++fmt_idx;
+				special = 0;
+				break;
+
 			case 'd':
 				if (special > 1) {
 					l = va_arg(ap, long int);
