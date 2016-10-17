@@ -11,21 +11,22 @@ check_PROGRAMS=\
  test-unsigned \
  test-simple
 
-T_COMMON_LDADD=libeh-printf.la -lecheck
+T_COMMON_LDADD=libeh-printf.la
+T_COMMON_SRC=src/eh-printf.h tests/eh-printf-tests.h
 
-test_simple_SOURCES=tests/test-simple.c src/eh-printf.h
+test_simple_SOURCES=tests/test-simple.c $(T_COMMON_SRC)
 test_simple_LDADD=$(T_COMMON_LDADD)
 
-test_hex_int_SOURCES=tests/test-hex-int.c src/eh-printf.h
+test_hex_int_SOURCES=tests/test-hex-int.c $(T_COMMON_SRC)
 test_hex_int_LDADD=$(T_COMMON_LDADD)
 
-test_negative_SOURCES=tests/test-negative.c src/eh-printf.h
+test_negative_SOURCES=tests/test-negative.c $(T_COMMON_SRC)
 test_negative_LDADD=$(T_COMMON_LDADD)
 
-test_pct5d_SOURCES=tests/test-pct5d.c src/eh-printf.h
+test_pct5d_SOURCES=tests/test-pct5d.c $(T_COMMON_SRC)
 test_pct5d_LDADD=$(T_COMMON_LDADD)
 
-test_unsigned_SOURCES=tests/test-unsigned.c src/eh-printf.h
+test_unsigned_SOURCES=tests/test-unsigned.c $(T_COMMON_SRC)
 test_unsigned_LDADD=$(T_COMMON_LDADD)
 
 ACLOCAL_AMFLAGS=-I m4 --install

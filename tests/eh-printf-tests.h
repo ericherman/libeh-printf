@@ -1,5 +1,5 @@
 /*
-test-pct5d.c
+eh-printf-tests.h - a simple string compare for testing
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
@@ -17,25 +17,30 @@ You should have received a copy of the GNU Lesser General Public
 License (COPYING) along with this library; if not, see:
 
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+
 */
-#include "../src/eh-printf.h"
-#include "eh-printf-tests.h"
+#ifndef EH_PRINTF_TESTS
+#define EH_PRINTF_TESTS
 
-int main(void)
+#include <stdio.h>
+#include <string.h>
+
+int ehpf_check_str(const char *file, int line, const char *actual,
+		   const char *expected)
 {
-	char expect[80];
-	char actual[80];
-	int failures;
-
-	eh_snprintf(actual, 80, "%5d", 23);
-	sprintf(expect, "%5d", 23);
-
-	failures = check_str(actual, expect);
-
-	eh_snprintf(actual, 80, "%050d", 23);
-	sprintf(expect, "%050d", 23);
-
-	failures += check_str(actual, expect);
-
-	return failures ? 1 : 0;
+	if (actual == expected) {
+		return 0;
+	}
+	if ((actual != NULL && expected != NULL)
+	    && (strcmp(expected, actual) == 0)) {
+		return 0;
+	}
+	fprintf(stderr, "FAIL: Expected '%s' but was '%s' [%s:%d]\n",
+		expected, actual, file, line);
+	return 1;
 }
+
+#define check_str(actual, expected)\
+ ehpf_check_str(__FILE__, __LINE__, actual, expected)
+
+#endif /* EH_PRINTF_TESTS */

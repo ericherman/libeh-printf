@@ -19,9 +19,7 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
 #include "../src/eh-printf.h"
-
-#include <stdio.h>
-#include <echeck.h>
+#include "eh-printf-tests.h"
 
 int main(void)
 {

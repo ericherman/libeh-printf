@@ -11,10 +11,7 @@ sprintf which will have a smaller firmware footprint. We shall see.
 
 Dependencies
 ------------
-The "make" and "make install" targets have no external dependencies.
-
-The "make check" target depends upon libecheck
-  https://github.com/ericherman/libecheck
+No library dependencies.
 
 
 Packaging

@@ -11,7 +11,6 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_PROG_CC
 
 # Checks for libraries.
-AC_CHECK_LIB([echeck], [echeck_str_m])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stddef.h])

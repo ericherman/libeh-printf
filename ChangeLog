@@ -1,5 +1,22 @@
 2016-10-17  Eric Herman <eric@freesa.org>
 
+	inline "check_str" from libecheck
+
+	https://github.com/ericherman/libecheck
+
+	* tests/eh-printf-tests.h: copy-paste-tweak check_str
+	* tests/test-hex-int.c: include eh-printf-tests.h
+	* tests/test-negative.c: include eh-printf-tests.h
+	* tests/test-pct5d.c: include eh-printf-tests.h
+	* tests/test-simple.c: include eh-printf-tests.h
+	* tests/test-unsigned.c: include eh-printf-tests.h
+	* Makefile.am: reflect new include
+	* configure.ac: remove libecheck reference
+	* README: remove reference to libecheck
+
+
+2016-10-17  Eric Herman <eric@freesa.org>
+
 	Add tests, and supporting code for "%u" and "%lu"
 
 	* src/eh-printf.c: support "%lu"
