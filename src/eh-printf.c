@@ -85,13 +85,15 @@ enum eh_base {
 };
 
 #define EH_LONG_BASE2_ASCII_BUF_SIZE ((8 * sizeof(unsigned long int))+1)
-static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
-			       unsigned char zero_padded, size_t field_size,
-			       long val)
+static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
+					      enum eh_base base,
+					      unsigned char zero_padded,
+					      size_t field_size,
+					      unsigned char was_negative,
+					      unsigned long v)
 {
 	size_t i, j;
-	unsigned char was_negative;
-	unsigned long int d, b, v;
+	unsigned long int d, b;
 	char reversed_buf[EH_LONG_BASE2_ASCII_BUF_SIZE];
 
 	/* huh? */
@@ -105,14 +107,6 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 	if (field_size >= dest_size) {
 		field_size = (dest_size - 1);
 	}
-
-	if (val < 0 && base == eh_decimal) {
-		was_negative = 1;
-		val = -val;
-	} else {
-		was_negative = 0;
-	}
-	v = ((unsigned long int)val);
 
 	b = ((unsigned long int)base);
 
@@ -174,6 +168,38 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 
 #undef EH_LONG_BASE2_ASCII_BUF_SIZE
 
+static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
+			       unsigned char zero_padded, size_t field_size,
+			       long val)
+{
+	unsigned char was_negative;
+
+	if (val < 0 && base == eh_decimal) {
+		was_negative = 1;
+		val = -val;
+	} else {
+		was_negative = 0;
+	}
+
+	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base,
+					       zero_padded, field_size,
+					       was_negative,
+					       (unsigned long int)val);
+}
+
+static size_t eh_unsigned_long_to_ascii(char *dest, size_t dest_size,
+					enum eh_base base,
+					unsigned char zero_padded,
+					size_t field_size, unsigned long val)
+{
+	unsigned char was_negative = 0;
+
+	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base,
+					       zero_padded, field_size,
+					       was_negative,
+					       (unsigned long int)val);
+}
+
 int eh_snprintf(char *str, size_t size, const char *format, ...)
 {
 	va_list ap;
@@ -195,8 +221,9 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 	/* supported types */
 	char c;
 	int d;
-	/* unsigned u; */
+	unsigned int u;
 	long l;
+	unsigned long int lu;
 	/* double f; */
 
 	/* huh? */
@@ -223,7 +250,7 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				break;
 
 			case '0':
-				if(field_size == 0) {
+				if (field_size == 0) {
 					zero_padded = 1;
 					++fmt_idx;
 					break;
@@ -259,6 +286,22 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				}
 				eh_long_to_ascii(buf, 100, eh_hex,
 						 zero_padded, field_size, l);
+				eh_strncpyl((str + used), buf, (size - used),
+					    &used);
+				++fmt_idx;
+				special = 0;
+				break;
+
+			case 'u':
+				if (special > 1) {
+					lu = va_arg(ap, unsigned long int);
+				} else {
+					u = va_arg(ap, unsigned int);
+					lu = u;
+				}
+				eh_unsigned_long_to_ascii(buf, 100, eh_decimal,
+							  zero_padded,
+							  field_size, lu);
 				eh_strncpyl((str + used), buf, (size - used),
 					    &used);
 				++fmt_idx;

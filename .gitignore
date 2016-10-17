@@ -2,6 +2,7 @@ test-simple
 test-hex-int
 test-negative
 test-pct5d
+test-unsigned
 
 ###################
 # backup files
