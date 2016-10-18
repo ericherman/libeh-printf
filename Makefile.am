@@ -56,9 +56,9 @@ spotless: clean
 	pushd tests && rm -rf `cat ../.gitignore | sed -e 's/#.*//'`; popd
 
 valgrind: $(check_PROGRAMS)
-	libtool --mode=execute valgrind ./test-simple
-	libtool --mode=execute valgrind ./test-hex-int
-	libtool --mode=execute valgrind ./test-negative
-	libtool --mode=execute valgrind ./test-pct5d
-	libtool --mode=execute valgrind ./test-unsigned
-	libtool --mode=execute valgrind ./test-str
+	libtool --mode=execute valgrind -q ./test-simple
+	libtool --mode=execute valgrind -q ./test-hex-int
+	libtool --mode=execute valgrind -q ./test-negative
+	libtool --mode=execute valgrind -q ./test-pct5d
+	libtool --mode=execute valgrind -q ./test-unsigned
+	libtool --mode=execute valgrind -q ./test-str

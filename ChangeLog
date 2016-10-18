@@ -4,7 +4,7 @@
 
 	* tests/test-str.c: add the test
 	* src/eh-printf.c: add code to support "%s"
-	* Makefile.am: add the test
+	* Makefile.am: add the test, quiet valgrind if no error
 	* .gitignore: ignore the test
 
 
