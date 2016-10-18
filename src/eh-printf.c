@@ -234,7 +234,9 @@ void eh_append(char *dest, size_t dest_size, size_t field_size, char *str,
 			dest[i++] = '?';
 		}
 		dest[i] = '\0';
-		*used += i;
+		if (used) {
+			*used += i;
+		}
 		return;
 	}
 
@@ -248,7 +250,9 @@ void eh_append(char *dest, size_t dest_size, size_t field_size, char *str,
 		dest[i++] = *(str + j);
 	}
 	dest[i] = '\0';
-	*used += i;
+	if (used) {
+		*used += i;
+	}
 }
 
 int eh_snprintf(char *str, size_t size, const char *format, ...)
