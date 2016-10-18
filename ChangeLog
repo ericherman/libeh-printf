@@ -1,5 +1,15 @@
 2016-10-17  Eric Herman <eric@freesa.org>
 
+	add support for "%s" and "%4s"
+
+	* tests/test-str.c: add the test
+	* src/eh-printf.c: add code to support "%s"
+	* Makefile.am: add the test
+	* .gitignore: ignore the test
+
+
+2016-10-17  Eric Herman <eric@freesa.org>
+
 	inline "check_str" from libecheck
 
 	https://github.com/ericherman/libecheck

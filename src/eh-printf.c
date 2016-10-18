@@ -200,6 +200,57 @@ static size_t eh_unsigned_long_to_ascii(char *dest, size_t dest_size,
 					       (unsigned long int)val);
 }
 
+void eh_append(char *dest, size_t dest_size, size_t field_size, char *str,
+	       size_t *used)
+{
+	size_t i, j, s_len;
+
+	/* huh? */
+	if (dest == NULL || dest_size < 2) {
+		if (dest && dest_size) {
+			dest[0] = '\0';
+		}
+		return;
+	}
+
+	/* bogus input, I guess we fix it? */
+	if (field_size >= dest_size) {
+		field_size = (dest_size - 1);
+	}
+
+	if (!str) {
+		str = "(null)";
+	}
+
+	s_len = eh_strlen(str);
+	if (s_len > field_size) {
+		field_size = s_len;
+	}
+
+	/* not enough space for data, bail out! */
+	if (field_size >= dest_size) {
+		/* we don't know what to write, fill with "?" */
+		for (i = 0; i < (dest_size - 1); ++i) {
+			dest[i++] = '?';
+		}
+		dest[i] = '\0';
+		*used += i;
+		return;
+	}
+
+	i = 0;
+	if (s_len < field_size) {
+		while (i < (field_size - s_len)) {
+			dest[i++] = ' ';
+		}
+	}
+	for (j = 0; *(str + j) != '\0'; ++j) {
+		dest[i++] = *(str + j);
+	}
+	dest[i] = '\0';
+	*used += i;
+}
+
 int eh_snprintf(char *str, size_t size, const char *format, ...)
 {
 	va_list ap;
@@ -219,6 +270,7 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 	size_t field_size;
 
 	/* supported types */
+	char *s;
 	char c;
 	int d;
 	unsigned int u;
@@ -327,6 +379,14 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				c = (char)va_arg(ap, int);
 				*(str + used) = c;
 				++used;
+				++fmt_idx;
+				special = 0;
+				break;
+
+			case 's':
+				s = (char *)va_arg(ap, char *);
+				eh_append((str + used), (size - used),
+					  field_size, s, &used);
 				++fmt_idx;
 				special = 0;
 				break;
