@@ -1,4 +1,12 @@
-2016-10-17  Eric Herman <eric@freesa.org>
+2016-10-19  Eric Herman <eric@freesa.org>
+
+	reset the zero_padding and field_size after printing,
+	be more robust about the unhandled case.
+
+	* src/eh-printf.c: the reset, more robustness for unhandled
+	* tests/test-pct5d.c: test the reset
+
+2016-10-18  Eric Herman <eric@freesa.org>
 
 	add support for "%s" and "%4s"
 

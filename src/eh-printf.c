@@ -301,14 +301,12 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 			case '%':
 				*(str + used) = '%';
 				++used;
-				++fmt_idx;
 				special = 0;
 				break;
 
 			case '0':
 				if (field_size == 0) {
 					zero_padded = 1;
-					++fmt_idx;
 					break;
 				} else {
 					/* fall-through */
@@ -324,11 +322,9 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 			case '9':
 				field_size *= 10;
 				field_size += format[fmt_idx] - '0';
-				++fmt_idx;
 				break;
 
 			case 'l':
-				++fmt_idx;
 				++special;	/* long long int ? */
 				break;
 
@@ -344,7 +340,6 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 						 zero_padded, field_size, l);
 				eh_strncpyl((str + used), buf, (size - used),
 					    &used);
-				++fmt_idx;
 				special = 0;
 				break;
 
@@ -360,7 +355,6 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 							  field_size, lu);
 				eh_strncpyl((str + used), buf, (size - used),
 					    &used);
-				++fmt_idx;
 				special = 0;
 				break;
 
@@ -375,7 +369,6 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 						 zero_padded, field_size, l);
 				eh_strncpyl((str + used), buf, (size - used),
 					    &used);
-				++fmt_idx;
 				special = 0;
 				break;
 
@@ -383,7 +376,6 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				c = (char)va_arg(ap, int);
 				*(str + used) = c;
 				++used;
-				++fmt_idx;
 				special = 0;
 				break;
 
@@ -391,14 +383,31 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				s = (char *)va_arg(ap, char *);
 				eh_append((str + used), (size - used),
 					  field_size, s, &used);
-				++fmt_idx;
 				special = 0;
 				break;
 
 			default:
 				/* unhandled */
+				*(str + used++) = '%';
+				if (zero_padded && used < size) {
+					*(str + used++) = '0';
+				}
+				l = field_size;
+				eh_long_to_ascii(buf, 100, eh_decimal,
+						 0, 0, field_size);
+				eh_strncpyl((str + used), buf, (size - used),
+					    &used);
+				special = 0;
+				if (used < size) {
+					*(str + used++) = format[fmt_idx];
+				}
 				special = 0;
 				break;
+			}
+			++fmt_idx;
+			if (!special) {
+				zero_padded = 0;
+				field_size = 0;
 			}
 		} else {
 			if (format[fmt_idx] == '%') {

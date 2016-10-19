@@ -37,5 +37,10 @@ int main(void)
 
 	failures += check_str(actual, expect);
 
+	eh_snprintf(actual, 80, "%050d%d", 23, 17);
+	sprintf(expect, "%050d%d", 23, 17);
+
+	failures += check_str(actual, expect);
+
 	return failures ? 1 : 0;
 }
