@@ -1,7 +1,7 @@
 lib_LTLIBRARIES=libeh-printf.la
-libeh_printf_la_SOURCES=src/eh-printf.c
+libeh_printf_la_SOURCES=src/eh-printf.c src/eh-string.c
 
-include_HEADERS=src/eh-printf.h
+include_HEADERS=src/eh-printf.h src/eh-string.h
 
 TESTS=$(check_PROGRAMS)
 check_PROGRAMS=\

@@ -23,3 +23,28 @@
 +*/
  
  #endif /* EH_PRINTF */
+--- a/src/eh-string.h
++++ b/src/eh-string.h
+@@ -22,9 +22,11 @@ License (COPYING) along with this library; if not, see:
+ #ifndef EH_STRING
+ #define EH_STRING
+ 
++/*
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
++*/
+ 
+ #include <stddef.h>
+ 
+@@ -48,8 +50,10 @@ Returns a pointer to  the destination string dest.
+ char *eh_strncpyl(char *dest, const char *src, size_t dest_size,
+ 		  size_t *dest_written);
+ 
++/*
+ #ifdef __cplusplus
+ }
+ #endif
++*/
+ 
+ #endif /* EH_STRING */

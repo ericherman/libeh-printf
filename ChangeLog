@@ -1,3 +1,13 @@
+2016-10-20  Eric Herman <eric@freesa.org>
+
+	extract string functions into separate header, sources
+
+	* src/eh-string.h: declare eh_strlen, eh_strncpyl prototypes
+	* src/eh-printf.c: moved the string functions to eh-string
+	* src/eh-string.c: extracted string functions from eh-printf
+	* Makefile.am: include the new headers, sources
+	* misc/pre-tidy.patch: include tidy for eh-string.h
+
 2016-10-19  Eric Herman <eric@freesa.org>
 
 	reset the zero_padding and field_size after printing,
