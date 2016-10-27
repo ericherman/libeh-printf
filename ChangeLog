@@ -1,3 +1,11 @@
+2016-10-27  Eric Herman <eric@freesa.org>
+
+	Use CHAR_BIT rather than define bytes to be 8 bits
+	Allow the definition of EH_CHAR_BIT to avoid #include <limits.h>
+	use EH_CHAR_BIT in EH_LONG_BASE2_ASCII_BUF_SIZE
+
+	* src/eh-printf.c: define and use EH_CHAR_BIT
+
 2016-10-20  Eric Herman <eric@freesa.org>
 
 	extract string functions into separate header, sources

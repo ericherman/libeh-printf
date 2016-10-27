@@ -28,7 +28,18 @@ enum eh_base {
 	eh_hex = 16
 };
 
-#define EH_LONG_BASE2_ASCII_BUF_SIZE ((8 * sizeof(unsigned long int))+1)
+#ifndef EH_CHAR_BIT
+#ifdef CHAR_BIT
+#define EH_CHAR_BIT CHAR_BIT
+#else
+#include <limits.h>
+#define EH_CHAR_BIT CHAR_BIT
+#endif
+#endif
+
+#define EH_LONG_BASE2_ASCII_BUF_SIZE \
+	((EH_CHAR_BIT * sizeof(unsigned long int)) + 1)
+
 static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 					      enum eh_base base,
 					      unsigned char zero_padded,
