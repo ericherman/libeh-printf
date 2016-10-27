@@ -28,6 +28,11 @@ enum eh_base {
 	eh_hex = 16
 };
 
+/*
+ * a byte is at least 8 bits, but *may* be more ...
+ * thus use CHAR_BIT from limits.h
+ * unless compiled with -DEH_CHAR_BIT=8 or something.
+ */
 #ifndef EH_CHAR_BIT
 #ifdef CHAR_BIT
 #define EH_CHAR_BIT CHAR_BIT
