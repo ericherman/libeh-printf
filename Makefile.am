@@ -1,7 +1,9 @@
 lib_LTLIBRARIES=libeh-printf.la
-libeh_printf_la_SOURCES=src/eh-printf.c src/eh-string.c
+libeh_printf_la_SOURCES=src/eh-printf.c src/eh-string.c src/eh-printf-linux.c
 
 include_HEADERS=src/eh-printf.h src/eh-string.h
+
+AM_CFLAGS=-std=c89 -O2 -ggdb -Wall -Wextra -Wpedantic -Werror
 
 TESTS=$(check_PROGRAMS)
 check_PROGRAMS=\
@@ -10,6 +12,7 @@ check_PROGRAMS=\
  test-pct5d \
  test-unsigned \
  test-str \
+ test-linux-write \
  test-simple
 
 T_COMMON_LDADD=libeh-printf.la
@@ -33,11 +36,14 @@ test_unsigned_LDADD=$(T_COMMON_LDADD)
 test_str_SOURCES=tests/test-str.c $(T_COMMON_SRC)
 test_str_LDADD=$(T_COMMON_LDADD)
 
+test_linux_write_SOURCES=tests/test-linux-write.c $(T_COMMON_SRC)
+test_linux_write_LDADD=$(T_COMMON_LDADD)
+test_linux_write_CFLAGS=$(AM_CFLAGS) -std=gnu89
+
 ACLOCAL_AMFLAGS=-I m4 --install
 
 EXTRA_DIST=misc
 
-AM_CFLAGS=-std=c89 -O3 -ggdb -Wall -Wextra -Wpedantic -Werror
 
 # extracted from https://github.com/torvalds/linux/blob/master/scripts/Lindent
 LINDENT=indent -npro -kr -i8 -ts8 -sob -l80 -ss -ncs -cp1 -il0
@@ -62,3 +68,4 @@ valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind -q ./test-pct5d
 	libtool --mode=execute valgrind -q ./test-unsigned
 	libtool --mode=execute valgrind -q ./test-str
+	libtool --mode=execute valgrind -q ./test-linux-write

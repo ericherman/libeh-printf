@@ -1,5 +1,5 @@
 /*
-eh-printf - A version of sprintf for embedded applications
+eh-printf-linux.c - linux specific system calls
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
@@ -19,26 +19,23 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 
 */
-#ifndef EH_PRINTF
-#define EH_PRINTF
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <unistd.h>
 
-#include <stddef.h>
-#include <stdarg.h>
+int EH_SYSOUT_FILENO = STDOUT_FILENO;
+int EH_SYSERR_FILENO = STDERR_FILENO;
 
-int eh_snprintf(char *str, size_t size, const char *format, ...);
-
-int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap);
-
-int eh_sys_putc(char c);
-
-int eh_sys_write_out(char *buf, size_t len);
-
-#ifdef __cplusplus
+int eh_sys_putc(char c)
+{
+	return write(EH_SYSOUT_FILENO, &c, 1);
 }
-#endif
 
-#endif /* EH_PRINTF */
+int eh_sys_write_out(char *buf, size_t len)
+{
+	return write(EH_SYSOUT_FILENO, buf, len);
+}
+
+int eh_sys_write_err(char *buf, size_t len)
+{
+	return write(EH_SYSERR_FILENO, buf, len);
+}
