@@ -34,20 +34,6 @@ null byte ('\0').
 */
 size_t eh_strlen(const char *s);
 
-/*
-Copies at most dest_size bytes of string pointed to by src, including
-the terminating null byte ('\0'), to the buffer pointed to by dest.  If
-there is no null byte among the first dest_size bytes, the string placed
-in dest will not be null-terminated.
-
-The number of bytes written to src (excluding the null terminator) is
-added to the value pointed to by the dest_written parameter.
-
-Returns a pointer to  the destination string dest.
-*/
-char *eh_strncpyl(char *dest, const char *src, size_t dest_size,
-		  size_t *dest_written);
-
 #ifdef __cplusplus
 }
 #endif

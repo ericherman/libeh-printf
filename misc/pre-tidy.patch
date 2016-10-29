@@ -37,9 +37,9 @@
  
  #include <stddef.h>
  
-@@ -48,8 +50,10 @@ Returns a pointer to  the destination string dest.
- char *eh_strncpyl(char *dest, const char *src, size_t dest_size,
- 		  size_t *dest_written);
+@@ -34,8 +36,10 @@ null byte ('\0').
+ */
+ size_t eh_strlen(const char *s);
  
 +/*
  #ifdef __cplusplus

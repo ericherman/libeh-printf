@@ -34,30 +34,3 @@ size_t eh_strlen(const char *str)
 	}
 	return i;
 }
-
-char *eh_strncpyl(char *dest, const char *src, size_t dest_size,
-		  size_t *dest_written)
-{
-	size_t i;
-
-	/* huh? */
-	if (dest == NULL || !dest_size) {
-		return NULL;
-	}
-
-	/* char-by-char copy */
-	for (i = 0; i < dest_size && src[i] != '\0'; i++) {
-		dest[i] = src[i];
-	}
-
-	/* NULL-terminate the string if room */
-	if (i < dest_size) {
-		dest[i] = '\0';
-	}
-
-	if (dest_written != NULL) {
-		*dest_written += i;
-	}
-
-	return dest;
-}

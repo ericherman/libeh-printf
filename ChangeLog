@@ -3,7 +3,11 @@
 	extract "eh_vprintf_ctx" from "eh_vsnprintf" for use in
 	a "eh_vprintf" function.
 
+	remove the no-longer needed "eh_strncpyl" function
+
 	* src/eh-printf.c: create a buffer context object, and use it
+	* src/eh-string.h: remove "eh_strncpyl"
+	* src/eh-string.c: remove "eh_strncpyl"
 	* misc/pre-tidy.patch: respin the pre-tidy patch
 
 2016-10-28  Eric Herman <eric@freesa.org>
