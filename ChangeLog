@@ -1,4 +1,8 @@
-2016-10-27  Eric Herman <eric@freesa.org>
+2016-10-29  Eric Herman <eric@freesa.org>
+
+	* misc/pre-tidy.patch: respin the pre-tidy patch
+
+2016-10-28  Eric Herman <eric@freesa.org>
 
 	Stub-out what I imagine we will need for actual printf,
 	write a simple linux implementation
