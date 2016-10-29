@@ -1,13 +1,13 @@
 2016-10-27  Eric Herman <eric@freesa.org>
 
 	Stub-out what I imagine we will need for actual printf,
-	write a linux implementation
+	write a simple linux implementation
 
-	* src/eh-printf.h
-	* src/eh-printf-linux.c
-	* tests/test-linux-write.c
-	* Makefile.am
-	* .gitignore
+	* src/eh-printf.h: add function stubs to write output
+	* src/eh-printf-linux.c: implement functions to write to STDOUT
+	* tests/test-linux-write.c: test the linux implementations
+	* Makefile.am: include test-linux-write (gnu/linux specific)
+	* .gitignore: test-linux-write
 
 2016-10-27  Eric Herman <eric@freesa.org>
 
