@@ -3,12 +3,28 @@
 	extract "eh_vprintf_ctx" from "eh_vsnprintf" for use in
 	a "eh_vprintf" function.
 
+	implement "eh_vprintf" and "eh_printf"
+
+	add eh-sys-context.h for OS/platform specific output functions:
+		"eh_sys_output_char", "eh_sys_output_str",
+	and context constructors/destroyers:
+		"start_sys_printf_context", "end_sys_printf_context"
+
+	test printf on linux
+
 	remove the no-longer needed "eh_strncpyl" function
 
-	* src/eh-printf.c: create a buffer context object, and use it
+	* src/eh-sys-context.h: platform interface
+	* src/eh-printf-linux.c: implement interface for linux
+	* src/eh-printf.h: add eh_printf, eh_vprintf
+	* src/eh-printf.c: implement eh_printf, eh_vprintf
+		create a buffer context object, and use it
+	* tests/test-linux-print.c: test "eh_printf" on linux
 	* src/eh-string.h: remove "eh_strncpyl"
 	* src/eh-string.c: remove "eh_strncpyl"
+	* tests/test-linux-write.c: create and use context in test
 	* misc/pre-tidy.patch: respin the pre-tidy patch
+	* Makefile.am: add eh-sys-context.h and test-linux-print
 
 2016-10-28  Eric Herman <eric@freesa.org>
 

@@ -1,5 +1,5 @@
 /*
-eh-printf - A version of sprintf for embedded applications
+eh-sys-contxt.h - definine system specific functions needed by printf
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
@@ -19,26 +19,25 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 
 */
-#ifndef EH_PRINTF
-#define EH_PRINTF
+#ifndef EH_SYS_CONTEXT
+#define EH_SYS_CONTEXT
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <stddef.h>
-#include <stdarg.h>
 
-int eh_printf(const char *format, ...);
+void *start_sys_printf_context();
 
-int eh_snprintf(char *str, size_t size, const char *format, ...);
+int end_sys_printf_context(void *ctx);
 
-int eh_vprintf(const char *format, va_list ap);
+size_t eh_sys_output_char(void *ctx, char c);
 
-int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap);
+size_t eh_sys_output_str(void *ctx, char *buf, size_t len);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* EH_PRINTF */
+#endif /* EH_SYS_CONTEXT */

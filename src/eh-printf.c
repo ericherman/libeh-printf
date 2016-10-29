@@ -20,6 +20,7 @@ License (COPYING) along with this library; if not, see:
 */
 #include "eh-printf.h"
 #include "eh-string.h"
+#include "eh-sys-context.h"
 
 typedef size_t (eh_output_char_func) (void *ctx, char c);
 typedef size_t (eh_output_str_func) (void *ctx, char *str, size_t len);
@@ -408,4 +409,30 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 
 	return eh_vprintf_ctx(eh_buf_output_char, eh_buf_output_str, &ctx,
 			      format, ap);
+}
+
+int eh_printf(const char *format, ...)
+{
+	va_list ap;
+	int rv;
+	va_start(ap, format);
+	rv = eh_vprintf(format, ap);
+	va_end(ap);
+	return rv;
+
+}
+
+int eh_vprintf(const char *format, va_list ap)
+{
+	int rv;
+	void *ctx;
+
+	ctx = start_sys_printf_context();
+
+	rv = eh_vprintf_ctx(eh_sys_output_char, eh_sys_output_str, &ctx, format,
+			    ap);
+
+	end_sys_printf_context(ctx);
+
+	return rv;
 }

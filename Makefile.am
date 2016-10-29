@@ -1,7 +1,7 @@
 lib_LTLIBRARIES=libeh-printf.la
 libeh_printf_la_SOURCES=src/eh-printf.c src/eh-string.c src/eh-printf-linux.c
 
-include_HEADERS=src/eh-printf.h src/eh-string.h
+include_HEADERS=src/eh-printf.h src/eh-string.h src/eh-sys-context.h
 
 AM_CFLAGS=-std=c89 -O2 -ggdb -Wall -Wextra -Wpedantic -Werror
 
@@ -13,6 +13,7 @@ check_PROGRAMS=\
  test-unsigned \
  test-str \
  test-linux-write \
+ test-linux-print \
  test-simple
 
 T_COMMON_LDADD=libeh-printf.la
@@ -39,6 +40,10 @@ test_str_LDADD=$(T_COMMON_LDADD)
 test_linux_write_SOURCES=tests/test-linux-write.c $(T_COMMON_SRC)
 test_linux_write_LDADD=$(T_COMMON_LDADD)
 test_linux_write_CFLAGS=$(AM_CFLAGS) -std=gnu89
+
+test_linux_print_SOURCES=tests/test-linux-print.c $(T_COMMON_SRC)
+test_linux_print_LDADD=$(T_COMMON_LDADD)
+test_linux_print_CFLAGS=$(AM_CFLAGS) -std=gnu89
 
 ACLOCAL_AMFLAGS=-I m4 --install
 
@@ -69,3 +74,4 @@ valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind -q ./test-unsigned
 	libtool --mode=execute valgrind -q ./test-str
 	libtool --mode=execute valgrind -q ./test-linux-write
+	libtool --mode=execute valgrind -q ./test-linux-print

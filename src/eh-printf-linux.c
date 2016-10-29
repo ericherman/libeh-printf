@@ -21,21 +21,61 @@ License (COPYING) along with this library; if not, see:
 */
 
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include "eh-sys-context.h"
 
 int EH_SYSOUT_FILENO = STDOUT_FILENO;
 int EH_SYSERR_FILENO = STDERR_FILENO;
 
-int eh_sys_putc(char c)
+int context;
+
+void *start_sys_printf_context()
 {
-	return write(EH_SYSOUT_FILENO, &c, 1);
+	context = 0;
+	return &context;
 }
 
-int eh_sys_write_out(char *buf, size_t len)
+int end_sys_printf_context(void *ctx)
 {
-	return write(EH_SYSOUT_FILENO, buf, len);
+	int *save_errno;
+	char *msg;
+	size_t len;
+	int rv;
+
+	save_errno = (int *)ctx;
+	if (save_errno && *save_errno) {
+		msg = strerror(*save_errno);
+		len = strlen(msg);
+		rv = write(EH_SYSERR_FILENO, msg, len);
+		if (rv > 0) {
+			rv = write(EH_SYSERR_FILENO, "\n", 1);
+		}
+		if (rv <= 0) {
+			return 1;
+		}
+	}
+	return 0;
 }
 
-int eh_sys_write_err(char *buf, size_t len)
+size_t eh_sys_output_char(void *ctx, char c)
 {
-	return write(EH_SYSERR_FILENO, buf, len);
+	return eh_sys_output_str(ctx, &c, 1);
+}
+
+size_t eh_sys_output_str(void *ctx, char *buf, size_t len)
+{
+	int rv;
+	int *save_errno;
+
+	save_errno = (int *)ctx;
+
+	rv = write(EH_SYSOUT_FILENO, buf, len);
+	if (rv < 0) {
+		if (save_errno && *save_errno == 0) {
+			*save_errno = errno;
+		}
+		return 0;
+	}
+	return (size_t)rv;
 }

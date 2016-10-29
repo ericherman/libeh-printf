@@ -5,6 +5,7 @@ test-pct5d
 test-unsigned
 test-str
 test-linux-write
+test-linux-print
 
 ###################
 # backup files

@@ -1,5 +1,5 @@
 /*
-test-linux-write.c
+test-linux-print.c
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
@@ -49,7 +49,6 @@ int main(void)
 	char file[PATH_MAX];
 	FILE *f;
 	size_t length, num_read;
-	void *ctx;
 
 	failures = 0;
 	orig_fd = EH_SYSOUT_FILENO;
@@ -58,16 +57,7 @@ int main(void)
 	snprintf(fd_path, PATH_MAX, "/proc/self/fd/%d", fd);
 	EH_SYSOUT_FILENO = fd;
 
-	ctx = start_sys_printf_context();
-
-	eh_sys_output_char(ctx, 'f');
-	eh_sys_output_char(ctx, 'o');
-	eh_sys_output_char(ctx, 'o');
-	eh_sys_output_char(ctx, '\n');
-
-	eh_sys_output_str(ctx, "bar\n", 4);
-
-	end_sys_printf_context(ctx);
+	eh_printf("f%co\n%s\n", 'o', "bar");
 
 	EH_SYSOUT_FILENO = orig_fd;
 
