@@ -19,11 +19,16 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
 #include "eh-printf.h"
-#include "eh-string.h"
 #include "eh-sys-context.h"
 
 typedef size_t (eh_output_char_func) (void *ctx, char c);
 typedef size_t (eh_output_str_func) (void *ctx, char *str, size_t len);
+
+/*
+Returns the number of bytes in the string, excluding the terminating
+null byte ('\0').
+*/
+static size_t eh_strlen(const char *str);
 
 struct buf_context {
 	char *str;
@@ -435,4 +440,19 @@ int eh_vprintf(const char *format, va_list ap)
 	end_sys_printf_context(ctx);
 
 	return rv;
+}
+
+static size_t eh_strlen(const char *str)
+{
+	size_t i;
+
+	if (str == NULL) {
+		return 0;
+	}
+
+	i = 0;
+	while (*(str + i) != '\0') {
+		++i;
+	}
+	return i;
 }

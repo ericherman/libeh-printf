@@ -12,19 +12,23 @@
 
 	test printf on linux
 
-	remove the no-longer needed "eh_strncpyl" function
+	remove the extra "eh-string.h", and "eh-string.c"
+		no-longer needed "eh_strncpyl" function
+		in-lined the (now static) "eh_strlen" function
 
 	* src/eh-sys-context.h: platform interface
 	* src/eh-printf-linux.c: implement interface for linux
 	* src/eh-printf.h: add eh_printf, eh_vprintf
 	* src/eh-printf.c: implement eh_printf, eh_vprintf
 		create a buffer context object, and use it
+		inline eh_strlen from src/eh-string.h
 	* tests/test-linux-print.c: test "eh_printf" on linux
-	* src/eh-string.h: remove "eh_strncpyl"
-	* src/eh-string.c: remove "eh_strncpyl"
 	* tests/test-linux-write.c: create and use context in test
 	* misc/pre-tidy.patch: respin the pre-tidy patch
-	* Makefile.am: add eh-sys-context.h and test-linux-print
+	* Makefile.am: add eh-sys-context.h, test-linux-print,
+		remove references to eh-string.c,.h
+	* src/eh-string.h: removed ("eh_strncpyl" was unused)
+	* src/eh-string.c: removed ("strlen" was inlined)
 
 2016-10-28  Eric Herman <eric@freesa.org>
 
