@@ -1,5 +1,9 @@
 2016-10-29  Eric Herman <eric@freesa.org>
 
+	extract "eh_vprintf_ctx" from "eh_vsnprintf" for use in
+	a "eh_vprintf" function.
+
+	* src/eh-printf.c: create a buffer context object, and use it
 	* misc/pre-tidy.patch: respin the pre-tidy patch
 
 2016-10-28  Eric Herman <eric@freesa.org>

@@ -21,6 +21,53 @@ License (COPYING) along with this library; if not, see:
 #include "eh-printf.h"
 #include "eh-string.h"
 
+typedef size_t (eh_output_char_func) (void *ctx, char c);
+typedef size_t (eh_output_str_func) (void *ctx, char *str, size_t len);
+
+struct buf_context {
+	char *str;
+	size_t len;
+	size_t used;
+};
+
+static size_t eh_buf_output_char(void *ctx, char c)
+{
+	struct buf_context *buf;
+
+	buf = (struct buf_context *)ctx;
+	if (buf->used < (buf->len - 1)) {
+		buf->str[buf->used++] = c;
+		buf->str[buf->used] = '\0';
+		return 1;
+	}
+	return 0;
+}
+
+static size_t eh_buf_output_str(void *ctx, char *str, size_t len)
+{
+	struct buf_context *buf;
+	size_t i;
+
+	buf = (struct buf_context *)ctx;
+	i = 0;
+
+	/* not enough space for data, bail out! */
+	if (len >= ((buf->len - 1) - buf->used)) {
+		/* we don't know what to write, fill with "?" */
+		for (i = 0; buf->used < (buf->len - 1); ++i) {
+			buf->str[buf->used++] = '?';
+		}
+	} else {
+		for (i = 0; i < len; ++i) {
+			buf->str[buf->used++] = str[i];
+		}
+	}
+
+	/* always null terminate */
+	buf->str[buf->used] = '\0';
+	return i;
+}
+
 enum eh_base {
 	eh_binary = 2,
 	eh_octal = 8,
@@ -160,23 +207,13 @@ static size_t eh_unsigned_long_to_ascii(char *dest, size_t dest_size,
 					       (unsigned long int)val);
 }
 
-void eh_append(char *dest, size_t dest_size, size_t field_size, char *str,
-	       size_t *used)
+static size_t eh_append(eh_output_char_func output_char,
+			eh_output_str_func output_str, void *ctx,
+			size_t field_size, char *str)
 {
-	size_t i, j, s_len;
+	size_t used, i, s_len;
 
-	/* huh? */
-	if (dest == NULL || dest_size < 2) {
-		if (dest && dest_size) {
-			dest[0] = '\0';
-		}
-		return;
-	}
-
-	/* bogus input, I guess we fix it? */
-	if (field_size >= dest_size) {
-		field_size = (dest_size - 1);
-	}
+	used = 0;
 
 	if (!str) {
 		str = "(null)";
@@ -187,32 +224,15 @@ void eh_append(char *dest, size_t dest_size, size_t field_size, char *str,
 		field_size = s_len;
 	}
 
-	/* not enough space for data, bail out! */
-	if (field_size >= dest_size) {
-		/* we don't know what to write, fill with "?" */
-		for (i = 0; i < (dest_size - 1); ++i) {
-			dest[i++] = '?';
+	if (s_len < field_size) {
+		for (i = 0; i < (field_size - s_len); ++i) {
+			used += output_char(ctx, ' ');
 		}
-		dest[i] = '\0';
-		if (used) {
-			*used += i;
-		}
-		return;
 	}
 
-	i = 0;
-	if (s_len < field_size) {
-		while (i < (field_size - s_len)) {
-			dest[i++] = ' ';
-		}
-	}
-	for (j = 0; *(str + j) != '\0'; ++j) {
-		dest[i++] = *(str + j);
-	}
-	dest[i] = '\0';
-	if (used) {
-		*used += i;
-	}
+	used += output_str(ctx, str, eh_strlen(str));
+
+	return used;
 }
 
 int eh_snprintf(char *str, size_t size, const char *format, ...)
@@ -225,7 +245,9 @@ int eh_snprintf(char *str, size_t size, const char *format, ...)
 	return rv;
 }
 
-int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
+int eh_vprintf_ctx(eh_output_char_func output_char,
+		   eh_output_str_func output_str, void *ctx, const char *format,
+		   va_list ap)
 {
 	size_t used, fmt_idx, fmt_len;
 	char buf[100];
@@ -242,11 +264,6 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 	unsigned long int lu;
 	/* double f; */
 
-	/* huh? */
-	if (str == NULL || size < 1) {
-		return 0;
-	}
-
 	zero_padded = 0;
 	field_size = 0;
 	used = 0;
@@ -254,13 +271,12 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 	fmt_len = eh_strlen(format);
 	special = 0;
 
-	while (used < size && fmt_idx < fmt_len) {
+	while (fmt_idx < fmt_len) {
 
 		if (special) {
 			switch (format[fmt_idx]) {
 			case '%':
-				*(str + used) = '%';
-				++used;
+				used += output_char(ctx, '%');
 				special = 0;
 				break;
 
@@ -298,8 +314,7 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				}
 				eh_long_to_ascii(buf, 100, eh_hex,
 						 zero_padded, field_size, l);
-				eh_strncpyl((str + used), buf, (size - used),
-					    &used);
+				used += output_str(ctx, buf, eh_strlen(buf));
 				special = 0;
 				break;
 
@@ -313,8 +328,7 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				eh_unsigned_long_to_ascii(buf, 100, eh_decimal,
 							  zero_padded,
 							  field_size, lu);
-				eh_strncpyl((str + used), buf, (size - used),
-					    &used);
+				used += output_str(ctx, buf, eh_strlen(buf));
 				special = 0;
 				break;
 
@@ -327,40 +341,36 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 				}
 				eh_long_to_ascii(buf, 100, eh_decimal,
 						 zero_padded, field_size, l);
-				eh_strncpyl((str + used), buf, (size - used),
-					    &used);
+				used += output_str(ctx, buf, eh_strlen(buf));
 				special = 0;
 				break;
 
 			case 'c':
 				c = (char)va_arg(ap, int);
-				*(str + used) = c;
-				++used;
+				used += output_char(ctx, c);
 				special = 0;
 				break;
 
 			case 's':
 				s = (char *)va_arg(ap, char *);
-				eh_append((str + used), (size - used),
-					  field_size, s, &used);
+				used +=
+				    eh_append(output_char, output_str, ctx,
+					      field_size, s);
 				special = 0;
 				break;
 
 			default:
 				/* unhandled */
-				*(str + used++) = '%';
-				if (zero_padded && used < size) {
-					*(str + used++) = '0';
+				used += output_char(ctx, '%');
+				if (zero_padded) {
+					used += output_char(ctx, '0');
 				}
 				l = field_size;
 				eh_long_to_ascii(buf, 100, eh_decimal,
 						 0, 0, field_size);
-				eh_strncpyl((str + used), buf, (size - used),
-					    &used);
-				special = 0;
-				if (used < size) {
-					*(str + used++) = format[fmt_idx];
-				}
+				used += output_str(ctx, buf, eh_strlen(buf));
+				used += output_char(ctx, format[fmt_idx]);
+
 				special = 0;
 				break;
 			}
@@ -373,19 +383,29 @@ int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 			if (format[fmt_idx] == '%') {
 				special = 1;
 			} else {
-				*(str + used) = format[fmt_idx];
-				++used;
+				used += output_char(ctx, format[fmt_idx]);
 			}
 			++fmt_idx;
 		}
 	}
+	return used;
+}
 
-	/* always null terminate */
-	if ((used < size) || (used == 0)) {
-		*(str + used) = '\0';
-	} else {
-		*(str + (used - 1)) = '\0';
+int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
+{
+	struct buf_context ctx;
+
+	/* huh? */
+	if (str == NULL || size < 1) {
+		return 0;
 	}
 
-	return used;
+	str[0] = '\0';
+
+	ctx.str = str;
+	ctx.len = size;
+	ctx.used = 0;
+
+	return eh_vprintf_ctx(eh_buf_output_char, eh_buf_output_str, &ctx,
+			      format, ap);
 }
