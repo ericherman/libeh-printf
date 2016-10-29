@@ -17,7 +17,7 @@
 		in-lined the (now static) "eh_strlen" function
 
 	* src/eh-sys-context.h: platform interface
-	* src/eh-printf-linux.c: implement interface for linux
+	* src/eh-sys-context-linux.c: implement interface for linux
 	* src/eh-printf.h: add eh_printf, eh_vprintf
 	* src/eh-printf.c: implement eh_printf, eh_vprintf
 		create a buffer context object, and use it

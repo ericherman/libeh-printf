@@ -1,5 +1,5 @@
 lib_LTLIBRARIES=libeh-printf.la
-libeh_printf_la_SOURCES=src/eh-printf.c src/eh-printf-linux.c
+libeh_printf_la_SOURCES=src/eh-printf.c src/eh-sys-context-linux.c
 
 include_HEADERS=src/eh-printf.h src/eh-sys-context.h
 
