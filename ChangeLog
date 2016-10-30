@@ -1,3 +1,9 @@
+2016-10-30  Eric Herman <eric@freesa.org>
+
+	implement printf on arduino
+
+	* src/eh-sys-context-arduino.cpp: a simple test worked
+
 2016-10-29  Eric Herman <eric@freesa.org>
 
 	extract "eh_vprintf_ctx" from "eh_vsnprintf" for use in
