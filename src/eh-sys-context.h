@@ -28,7 +28,7 @@ extern "C" {
 
 #include <stddef.h>
 
-void *start_sys_printf_context();
+void *start_sys_printf_context(void);
 
 int end_sys_printf_context(void *ctx);
 
