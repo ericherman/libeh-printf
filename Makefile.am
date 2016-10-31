@@ -58,7 +58,7 @@ tidy:
 	$(LINDENT) \
 		-T FILE \
 		-T size_t \
-		`find src tests -name '*.h' -o -name '*.c'`
+		`find src tests -name '*.h' -o -name '*.c' -o -name '*.cpp'`
 	patch -Rp1 -i misc/pre-tidy.patch
 
 spotless: clean
