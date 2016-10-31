@@ -19,227 +19,8 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
 #include "eh-printf.h"
+#include "eh-printf-private.h"
 #include "eh-sys-context.h"
-
-typedef size_t (eh_output_char_func) (void *ctx, char c);
-typedef size_t (eh_output_str_func) (void *ctx, char *str, size_t len);
-
-/*
-Returns the number of bytes in the string, excluding the terminating
-null byte ('\0').
-*/
-static size_t eh_strlen(const char *str);
-
-struct buf_context {
-	char *str;
-	size_t len;
-	size_t used;
-};
-
-static size_t eh_buf_output_char(void *ctx, char c)
-{
-	struct buf_context *buf;
-
-	buf = (struct buf_context *)ctx;
-	if (buf->used < (buf->len - 1)) {
-		buf->str[buf->used++] = c;
-		buf->str[buf->used] = '\0';
-		return 1;
-	}
-	return 0;
-}
-
-static size_t eh_buf_output_str(void *ctx, char *str, size_t len)
-{
-	struct buf_context *buf;
-	size_t i;
-
-	buf = (struct buf_context *)ctx;
-	i = 0;
-
-	/* not enough space for data, bail out! */
-	if (len >= ((buf->len - 1) - buf->used)) {
-		/* we don't know what to write, fill with "?" */
-		for (i = 0; buf->used < (buf->len - 1); ++i) {
-			buf->str[buf->used++] = '?';
-		}
-	} else {
-		for (i = 0; i < len; ++i) {
-			buf->str[buf->used++] = str[i];
-		}
-	}
-
-	/* always null terminate */
-	buf->str[buf->used] = '\0';
-	return i;
-}
-
-enum eh_base {
-	eh_binary = 2,
-	eh_octal = 8,
-	eh_decimal = 10,
-	eh_hex = 16
-};
-
-/*
- * a byte is at least 8 bits, but *may* be more ...
- * thus use CHAR_BIT from limits.h
- * unless compiled with -DEH_CHAR_BIT=8 or something.
- */
-#ifndef EH_CHAR_BIT
-#ifdef CHAR_BIT
-#define EH_CHAR_BIT CHAR_BIT
-#else
-#include <limits.h>
-#define EH_CHAR_BIT CHAR_BIT
-#endif
-#endif
-
-#define EH_LONG_BASE2_ASCII_BUF_SIZE \
-	((EH_CHAR_BIT * sizeof(unsigned long int)) + 1)
-
-static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
-					      enum eh_base base,
-					      unsigned char zero_padded,
-					      size_t field_size,
-					      unsigned char was_negative,
-					      unsigned long v)
-{
-	size_t i, j;
-	unsigned long int d, b;
-	char reversed_buf[EH_LONG_BASE2_ASCII_BUF_SIZE];
-
-	/* huh? */
-	if (dest == NULL || dest_size < 2) {
-		if (dest && dest_size) {
-			dest[0] = '\0';
-		}
-		return 0;
-	}
-	/* bogus input, I guess we fix it? */
-	if (field_size >= dest_size) {
-		field_size = (dest_size - 1);
-	}
-
-	b = ((unsigned long int)base);
-
-	i = 0;
-	while (v > 0) {
-		d = v % b;
-		v = v / b;
-		if (d < 10) {
-			reversed_buf[i++] = '0' + d;
-		} else {
-			reversed_buf[i++] = 'A' + (d - 10);
-		}
-	}
-
-	/* If the field size was not specified (zero), or the value is
-	   wider than the specified field width, then the field is
-	   expanded to contain the value. */
-	if (field_size < i) {
-		field_size = i;
-	}
-
-	j = 0;
-	/* not enough space for data, bail out! */
-	if (field_size >= dest_size) {
-		/* we don't know what to write, fill with "?" */
-		while (j < (dest_size - 1)) {
-			dest[j++] = '?';
-		}
-		dest[j] = '\0';
-		return j;
-	}
-
-	/* fill padding to right justify */
-	if (zero_padded && base == eh_decimal && was_negative) {
-		dest[j++] = '-';
-	}
-	while (j < (field_size - i)) {
-		dest[j++] = (zero_padded) ? '0' : ' ';
-	}
-	if (!zero_padded && base == eh_decimal && was_negative) {
-		if (j > 0) {
-			dest[j - 1] = '-';
-		} else {
-			dest[j++] = '-';
-		}
-	}
-
-	/* walk the reversed_buf backwards */
-	while (i) {
-		dest[j++] = reversed_buf[--i];
-	}
-
-	/* NULL terminate */
-	dest[j] = '\0';
-
-	/* return characters written, excluding null character */
-	return j;
-}
-
-#undef EH_LONG_BASE2_ASCII_BUF_SIZE
-
-static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
-			       unsigned char zero_padded, size_t field_size,
-			       long val)
-{
-	unsigned char was_negative;
-
-	if (val < 0 && base == eh_decimal) {
-		was_negative = 1;
-		val = -val;
-	} else {
-		was_negative = 0;
-	}
-
-	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base,
-					       zero_padded, field_size,
-					       was_negative,
-					       (unsigned long int)val);
-}
-
-static size_t eh_unsigned_long_to_ascii(char *dest, size_t dest_size,
-					enum eh_base base,
-					unsigned char zero_padded,
-					size_t field_size, unsigned long val)
-{
-	unsigned char was_negative = 0;
-
-	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base,
-					       zero_padded, field_size,
-					       was_negative,
-					       (unsigned long int)val);
-}
-
-static size_t eh_append(eh_output_char_func output_char,
-			eh_output_str_func output_str, void *ctx,
-			size_t field_size, char *str)
-{
-	size_t used, i, s_len;
-
-	used = 0;
-
-	if (!str) {
-		str = "(null)";
-	}
-
-	s_len = eh_strlen(str);
-	if (s_len > field_size) {
-		field_size = s_len;
-	}
-
-	if (s_len < field_size) {
-		for (i = 0; i < (field_size - s_len); ++i) {
-			used += output_char(ctx, ' ');
-		}
-	}
-
-	used += output_str(ctx, str, eh_strlen(str));
-
-	return used;
-}
 
 int eh_snprintf(char *str, size_t size, const char *format, ...)
 {
@@ -251,9 +32,55 @@ int eh_snprintf(char *str, size_t size, const char *format, ...)
 	return rv;
 }
 
-int eh_vprintf_ctx(eh_output_char_func output_char,
-		   eh_output_str_func output_str, void *ctx, const char *format,
-		   va_list ap)
+int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
+{
+	struct buf_context ctx;
+
+	/* huh? */
+	if (str == NULL || size < 1) {
+		return 0;
+	}
+
+	str[0] = '\0';
+
+	ctx.str = str;
+	ctx.len = size;
+	ctx.used = 0;
+
+	return eh_vprintf_ctx(eh_buf_output_char, eh_buf_output_str, &ctx,
+			      format, ap);
+}
+
+int eh_printf(const char *format, ...)
+{
+	va_list ap;
+	int rv;
+	va_start(ap, format);
+	rv = eh_vprintf(format, ap);
+	va_end(ap);
+	return rv;
+
+}
+
+int eh_vprintf(const char *format, va_list ap)
+{
+	int rv;
+	void *ctx;
+
+	ctx = start_sys_printf_context();
+
+	rv = eh_vprintf_ctx(eh_sys_output_char, eh_sys_output_str, &ctx, format,
+			    ap);
+
+	end_sys_printf_context(ctx);
+
+	return rv;
+}
+
+/* internals */
+static int eh_vprintf_ctx(eh_output_char_func output_char,
+			  eh_output_str_func output_str, void *ctx,
+			  const char *format, va_list ap)
 {
 	size_t used, fmt_idx, fmt_len;
 	char buf[100];
@@ -397,51 +224,76 @@ int eh_vprintf_ctx(eh_output_char_func output_char,
 	return used;
 }
 
-int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
+static size_t eh_buf_output_char(void *ctx, char c)
 {
-	struct buf_context ctx;
+	struct buf_context *buf;
 
-	/* huh? */
-	if (str == NULL || size < 1) {
-		return 0;
+	buf = (struct buf_context *)ctx;
+	if (buf->used < (buf->len - 1)) {
+		buf->str[buf->used++] = c;
+		buf->str[buf->used] = '\0';
+		return 1;
+	}
+	return 0;
+}
+
+static size_t eh_buf_output_str(void *ctx, char *str, size_t len)
+{
+	struct buf_context *buf;
+	size_t i;
+
+	buf = (struct buf_context *)ctx;
+	i = 0;
+
+	/* not enough space for data, bail out! */
+	if (len >= ((buf->len - 1) - buf->used)) {
+		/* we don't know what to write, fill with "?" */
+		for (i = 0; buf->used < (buf->len - 1); ++i) {
+			buf->str[buf->used++] = '?';
+		}
+	} else {
+		for (i = 0; i < len; ++i) {
+			buf->str[buf->used++] = str[i];
+		}
 	}
 
-	str[0] = '\0';
-
-	ctx.str = str;
-	ctx.len = size;
-	ctx.used = 0;
-
-	return eh_vprintf_ctx(eh_buf_output_char, eh_buf_output_str, &ctx,
-			      format, ap);
+	/* always null terminate */
+	buf->str[buf->used] = '\0';
+	return i;
 }
 
-int eh_printf(const char *format, ...)
+static size_t eh_append(eh_output_char_func output_char,
+			eh_output_str_func output_str, void *ctx,
+			size_t field_size, char *str)
 {
-	va_list ap;
-	int rv;
-	va_start(ap, format);
-	rv = eh_vprintf(format, ap);
-	va_end(ap);
-	return rv;
+	size_t used, i, s_len;
 
+	used = 0;
+
+	if (!str) {
+		str = "(null)";
+	}
+
+	s_len = eh_strlen(str);
+	if (s_len > field_size) {
+		field_size = s_len;
+	}
+
+	if (s_len < field_size) {
+		for (i = 0; i < (field_size - s_len); ++i) {
+			used += output_char(ctx, ' ');
+		}
+	}
+
+	used += output_str(ctx, str, eh_strlen(str));
+
+	return used;
 }
 
-int eh_vprintf(const char *format, va_list ap)
-{
-	int rv;
-	void *ctx;
-
-	ctx = start_sys_printf_context();
-
-	rv = eh_vprintf_ctx(eh_sys_output_char, eh_sys_output_str, &ctx, format,
-			    ap);
-
-	end_sys_printf_context(ctx);
-
-	return rv;
-}
-
+/*
+Returns the number of bytes in the string, excluding the terminating
+null byte ('\0').
+*/
 static size_t eh_strlen(const char *str)
 {
 	size_t i;
@@ -456,3 +308,121 @@ static size_t eh_strlen(const char *str)
 	}
 	return i;
 }
+
+static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
+			       unsigned char zero_padded, size_t field_size,
+			       long val)
+{
+	unsigned char was_negative;
+
+	if (val < 0 && base == eh_decimal) {
+		was_negative = 1;
+		val = -val;
+	} else {
+		was_negative = 0;
+	}
+
+	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base,
+					       zero_padded, field_size,
+					       was_negative,
+					       (unsigned long int)val);
+}
+
+static size_t eh_unsigned_long_to_ascii(char *dest, size_t dest_size,
+					enum eh_base base,
+					unsigned char zero_padded,
+					size_t field_size, unsigned long val)
+{
+	unsigned char was_negative = 0;
+
+	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base,
+					       zero_padded, field_size,
+					       was_negative,
+					       (unsigned long int)val);
+}
+
+#define EH_LONG_BASE2_ASCII_BUF_SIZE \
+	((EH_CHAR_BIT * sizeof(unsigned long int)) + 1)
+
+static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
+					      enum eh_base base,
+					      unsigned char zero_padded,
+					      size_t field_size,
+					      unsigned char was_negative,
+					      unsigned long v)
+{
+	size_t i, j;
+	unsigned long int d, b;
+	char reversed_buf[EH_LONG_BASE2_ASCII_BUF_SIZE];
+
+	/* huh? */
+	if (dest == NULL || dest_size < 2) {
+		if (dest && dest_size) {
+			dest[0] = '\0';
+		}
+		return 0;
+	}
+	/* bogus input, I guess we fix it? */
+	if (field_size >= dest_size) {
+		field_size = (dest_size - 1);
+	}
+
+	b = ((unsigned long int)base);
+
+	i = 0;
+	while (v > 0) {
+		d = v % b;
+		v = v / b;
+		if (d < 10) {
+			reversed_buf[i++] = '0' + d;
+		} else {
+			reversed_buf[i++] = 'A' + (d - 10);
+		}
+	}
+
+	/* If the field size was not specified (zero), or the value is
+	   wider than the specified field width, then the field is
+	   expanded to contain the value. */
+	if (field_size < i) {
+		field_size = i;
+	}
+
+	j = 0;
+	/* not enough space for data, bail out! */
+	if (field_size >= dest_size) {
+		/* we don't know what to write, fill with "?" */
+		while (j < (dest_size - 1)) {
+			dest[j++] = '?';
+		}
+		dest[j] = '\0';
+		return j;
+	}
+
+	/* fill padding to right justify */
+	if (zero_padded && base == eh_decimal && was_negative) {
+		dest[j++] = '-';
+	}
+	while (j < (field_size - i)) {
+		dest[j++] = (zero_padded) ? '0' : ' ';
+	}
+	if (!zero_padded && base == eh_decimal && was_negative) {
+		if (j > 0) {
+			dest[j - 1] = '-';
+		} else {
+			dest[j++] = '-';
+		}
+	}
+
+	/* walk the reversed_buf backwards */
+	while (i) {
+		dest[j++] = reversed_buf[--i];
+	}
+
+	/* NULL terminate */
+	dest[j] = '\0';
+
+	/* return characters written, excluding null character */
+	return j;
+}
+
+#undef EH_LONG_BASE2_ASCII_BUF_SIZE

@@ -1,7 +1,7 @@
 lib_LTLIBRARIES=libeh-printf.la
 libeh_printf_la_SOURCES=src/eh-printf.c src/eh-sys-context-linux.c
 
-include_HEADERS=src/eh-printf.h src/eh-sys-context.h
+include_HEADERS=src/eh-printf.h src/eh-sys-context.h src/eh-printf-private.h
 
 AM_CFLAGS=-std=c89 -O2 -ggdb -Wall -Wextra -Wpedantic -Werror
 

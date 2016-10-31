@@ -1,3 +1,12 @@
+2016-10-31  Eric Herman <eric@freesa.org>
+
+	reorganize the source a bit
+	TODO: fight with autotools to avoid installing private header
+
+	* src/eh-printf-private.h: extract prototypes into this file
+	* src/eh-printf.c: group the functions a little more nicely
+	* Makefile.am: include the new .h
+
 2016-10-30  Eric Herman <eric@freesa.org>
 
 	implement printf on arduino
