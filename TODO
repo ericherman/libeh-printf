@@ -1,0 +1,9 @@
+libeh-printf TODO
+
+* currently the private header is installed in $PREFIX/include but it should
+  only be used at compile time
+
+* the linux specific code is included in the build... I suspect there is an
+  autotools way to only include it if it if we are building on linux
+
+* eh_printf() does not support %f ... maybe it should?
