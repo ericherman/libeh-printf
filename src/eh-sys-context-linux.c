@@ -63,7 +63,7 @@ size_t eh_sys_output_char(void *ctx, char c)
 	return eh_sys_output_str(ctx, &c, 1);
 }
 
-size_t eh_sys_output_str(void *ctx, char *buf, size_t len)
+size_t eh_sys_output_str(void *ctx, const char *buf, size_t len)
 {
 	int rv;
 	int *save_errno;

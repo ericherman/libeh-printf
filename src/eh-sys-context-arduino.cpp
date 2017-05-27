@@ -19,25 +19,34 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 
 */
-#include <Arduino.h>
+
 #include "eh-sys-context.h"
+#include "eh-arduino-serialobj.h"
+
+extern "C" {
 
 void *start_sys_printf_context()
 {
-	return NULL;
+	return &SERIAL_OBJ;
 }
 
 int end_sys_printf_context(void *ctx)
 {
-	return 0;
+	return ctx ? 0 : 1;
 }
 
 size_t eh_sys_output_char(void *ctx, char c)
 {
-	return Serial.print(c);
+	return eh_sys_output_str(ctx, &c, 1);
 }
 
-size_t eh_sys_output_str(void *ctx, char *buf, size_t len)
+size_t eh_sys_output_str(void *ctx, const char *buf, size_t len)
 {
-	return Serial.print(buf);
+	if (ctx == NULL) {
+		return (size_t)(-1L);
+	}
+	const uint8_t *bytes = (const uint8_t *)buf;
+	return (size_t)SERIAL_OBJ.write(bytes, len);
 }
+
+} /* extern "C" */

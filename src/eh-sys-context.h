@@ -34,7 +34,7 @@ int end_sys_printf_context(void *ctx);
 
 size_t eh_sys_output_char(void *ctx, char c);
 
-size_t eh_sys_output_str(void *ctx, char *buf, size_t len);
+size_t eh_sys_output_str(void *ctx, const char *str, size_t len);
 
 #ifdef __cplusplus
 }

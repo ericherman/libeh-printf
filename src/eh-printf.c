@@ -22,28 +22,28 @@ License (COPYING) along with this library; if not, see:
 #include "eh-printf-private.h"
 #include "eh-sys-context.h"
 
-int eh_snprintf(char *str, size_t size, const char *format, ...)
+int eh_snprintf(char *dest, size_t size, const char *format, ...)
 {
 	va_list ap;
 	int rv;
 	va_start(ap, format);
-	rv = eh_vsnprintf(str, size, format, ap);
+	rv = eh_vsnprintf(dest, size, format, ap);
 	va_end(ap);
 	return rv;
 }
 
-int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap)
+int eh_vsnprintf(char *dest, size_t size, const char *format, va_list ap)
 {
 	struct buf_context ctx;
 
 	/* huh? */
-	if (str == NULL || size < 1) {
+	if (dest == NULL || size < 1) {
 		return 0;
 	}
 
-	str[0] = '\0';
+	dest[0] = '\0';
 
-	ctx.str = str;
+	ctx.str = dest;
 	ctx.len = size;
 	ctx.used = 0;
 
@@ -237,7 +237,7 @@ static size_t eh_buf_output_char(void *ctx, char c)
 	return 0;
 }
 
-static size_t eh_buf_output_str(void *ctx, char *str, size_t len)
+static size_t eh_buf_output_str(void *ctx, const char *str, size_t len)
 {
 	struct buf_context *buf;
 	size_t i;
@@ -264,7 +264,7 @@ static size_t eh_buf_output_str(void *ctx, char *str, size_t len)
 
 static size_t eh_append(eh_output_char_func output_char,
 			eh_output_str_func output_str, void *ctx,
-			size_t field_size, char *str)
+			size_t field_size, const char *str)
 {
 	size_t used, i, s_len;
 

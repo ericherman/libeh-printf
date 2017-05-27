@@ -34,7 +34,7 @@ License (COPYING) along with this library; if not, see:
 #endif
 
 typedef size_t (eh_output_char_func) (void *ctx, char c);
-typedef size_t (eh_output_str_func) (void *ctx, char *str, size_t len);
+typedef size_t (eh_output_str_func) (void *ctx, const char *str, size_t len);
 
 struct buf_context {
 	char *str;
@@ -55,11 +55,11 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 
 static size_t eh_buf_output_char(void *ctx, char c);
 
-static size_t eh_buf_output_str(void *ctx, char *str, size_t len);
+static size_t eh_buf_output_str(void *ctx, const char *str, size_t len);
 
 static size_t eh_append(eh_output_char_func output_char,
 			eh_output_str_func output_str, void *ctx,
-			size_t field_size, char *str);
+			size_t field_size, const char *str);
 
 static size_t eh_strlen(const char *str);
 
