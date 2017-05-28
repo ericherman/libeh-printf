@@ -50,7 +50,7 @@
  #endif /* EH_SYS_CONTEXT */
 --- orig/src/eh-sys-context-arduino.cpp
 +++ tidy/src/eh-sys-context-arduino.cpp
-@@ -23,7 +23,9 @@
+@@ -38,7 +38,9 @@
  #include "eh-sys-context.h"
  #include "eh-arduino-serialobj.h"
  
@@ -60,7 +60,7 @@
  
  void *start_sys_printf_context()
  {
-@@ -49,4 +51,6 @@
+@@ -64,4 +66,6 @@
  	return (size_t)SERIAL_OBJ.write(bytes, len);
  }
  
