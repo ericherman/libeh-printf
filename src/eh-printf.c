@@ -38,7 +38,7 @@ int eh_vsnprintf(char *dest, size_t size, const char *format, va_list ap)
 
 	/* huh? */
 	if (dest == NULL || size < 1) {
-		return 0;
+		return size;
 	}
 
 	dest[0] = '\0';

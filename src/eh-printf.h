@@ -29,8 +29,15 @@ extern "C" {
 #include <stddef.h>
 #include <stdarg.h>
 
+/* Returns the number of characters printed (excluding the null byte). */
 int eh_printf(const char *format, ...);
 
+/* Returns the number of characters printed (excluding the null byte).
+   If the output  was truncated  due  to  this  limit  then the return
+   value is the number of characters (excluding the terminating null
+   byte) which would have been written  to the final string if enough
+   space had been available.  Thus, a return value of size or more means
+   that the output  was  truncated. */
 int eh_snprintf(char *str, size_t size, const char *format, ...);
 
 int eh_vprintf(const char *format, va_list ap);

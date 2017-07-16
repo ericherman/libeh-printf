@@ -1,3 +1,12 @@
+2017-07-16  Eric Herman <eric@freesa.org>
+
+	As spedified in "man 3 snprintf" truncation should result in
+	"size" characters being written.
+
+	* src/eh-printf.h: Document behavior specified in man 3 snprintf
+	* src/eh-printf.c: Make behavior match spec
+	* misc/pre-tidy.patch: respin for comments
+
 2016-10-31  Eric Herman <eric@freesa.org>
 
 	reorganize the source a bit
