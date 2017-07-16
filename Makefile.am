@@ -69,6 +69,10 @@ tidy:
 	$(LINDENT) \
 		-T FILE \
 		-T size_t \
+		-T uint8_t \
+		-T uint16_t \
+		-T uint64_t \
+		-T int16_t \
 		`find src tests -name '*.h' -o -name '*.c' -o -name '*.cpp'`
 	patch -Rp1 -i misc/pre-tidy.patch
 

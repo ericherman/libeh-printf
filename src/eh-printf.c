@@ -471,9 +471,9 @@ static double to_power(unsigned base, unsigned exp)
 #define mant_mask 0x000FFFFFFFFFFFFFULL
 #endif
 static void eh_double64_endian_little_radix_2_to_fields(double d,
-							uint8_t * sign,
-							int16_t * exponent,
-							uint64_t * fraction)
+							uint8_t *sign,
+							int16_t *exponent,
+							uint64_t *fraction)
 {
 	union eh_float64_u {
 		double d;
@@ -486,8 +486,8 @@ static void eh_double64_endian_little_radix_2_to_fields(double d,
 	d_ui64 = pun_f.ul;
 
 	*sign = (d_ui64 & sign_mask) ? 1U : 0U;
-	raw_exp = (uint16_t) (d_ui64 >> 52U & rexp_mask);
-	*exponent = ((int16_t) raw_exp) - 1023L;
+	raw_exp = (uint16_t)(d_ui64 >> 52U & rexp_mask);
+	*exponent = ((int16_t)raw_exp) - 1023L;
 	*fraction = d_ui64 & mant_mask;
 }
 
@@ -548,13 +548,13 @@ static size_t eh_double_to_ascii(double f, char *buf, size_t len,
 	/* crude rounding */
 	f = f + (0.5 / to_power(10, past_decimal));
 
-	exp_base10 = (int16_t) ceil(log10(f));
+	exp_base10 = (int16_t)ceil(log10(f));
 
 	if (exp_base10 > 0) {
 		for (i = 0; i < exp_base10; ++i) {
-			x = to_power(10, (((int)exp_base10) - (1 + i)));
+			x = to_power(10, ((int)exp_base10) - (1 + i));
 			y = (f / x);
-			c = (uint8_t) y;
+			c = (uint8_t)y;
 			if (w < len) {
 				buf[w++] = '0' + (c % 10);
 			}
@@ -567,7 +567,7 @@ static size_t eh_double_to_ascii(double f, char *buf, size_t len,
 		}
 		for (u = 0; u < past_decimal; ++u) {
 			f *= 10;
-			c = (uint8_t) f;
+			c = (uint8_t)f;
 			if (w < len) {
 				buf[w++] = '0' + (c % 10);
 			}

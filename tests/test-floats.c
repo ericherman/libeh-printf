@@ -38,8 +38,8 @@ int main(void)
 
 	Cmp_with_libc1("%f", 123.4);
 	Cmp_with_libc1("%f", -123.4);
-	Cmp_with_libc1("%f", 1.0/0.0);
-	Cmp_with_libc1("%f", -1.0/0.0);
+	Cmp_with_libc1("%f", (1.0 / 0.0));
+	Cmp_with_libc1("%f", (-1.0 / 0.0));
 	Cmp_with_libc1("%f", sqrt(-1.0));
 
 	return failures ? 1 : 0;

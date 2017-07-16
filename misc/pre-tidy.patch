@@ -35,9 +35,9 @@
  #endif
 +*/
  
- #include <stddef.h>
- 
-@@ -36,8 +38,10 @@
+ #include "config.h"
+ #if HAVE_STDDEF_H
+@@ -39,8 +41,10 @@
  
  size_t eh_sys_output_str(void *ctx, const char *str, size_t len);
  
