@@ -11,7 +11,7 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_PROG_CC
 
 # Checks for header files.
-AC_CHECK_HEADERS([stddef.h stdint.h math.h])
+AC_CHECK_HEADERS([stddef.h stdint.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
@@ -21,7 +21,7 @@ AC_TYPE_UINT64_T
 AC_TYPE_INT16_T
 
 # Checks for library functions.
-AC_CHECK_FUNCS([ceil log10])
+AC_CHECK_FUNCS([sqrt])
 
 AM_INIT_AUTOMAKE([subdir-objects -Werror -Wall])
 AM_PROG_AR

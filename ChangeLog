@@ -8,8 +8,8 @@
 	* src/eh-printf.c: sketch-in "%f" support, snprintf return val
 	* src/eh-printf-private.h: eh_double_to_ascii
 	* tests/test-floats.c: test %f for a positive and negative
-	* configure.ac: ceil, log10, uint*_t
-	* Makefile.am: add tests, add -lm for ceil, log10
+	* configure.ac: stdint.h, uint*_t, sqrt
+	* Makefile.am: add tests, add -lm for sqrt(-1.0) in test-floats
 	* misc/pre-tidy.patch: respin for comments
 	* TODO: mention ceil and log10
 

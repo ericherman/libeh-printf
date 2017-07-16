@@ -26,10 +26,6 @@ License (COPYING) along with this library; if not, see:
 #include <stdint.h>
 #endif
 
-#if HAVE_MATH_H
-#include <math.h>
-#endif
-
 int eh_snprintf(char *dest, size_t size, const char *format, ...)
 {
 	va_list ap;
@@ -472,6 +468,28 @@ static double to_power(unsigned base, unsigned exp)
 	return v;
 }
 
+static int ceil_log(unsigned base, double d)
+{
+	int log;
+
+	d = (d < 0.0) ? -d : d;
+
+	if (d < 1.0 && d >= 0.5) {
+		return 0;
+	}
+
+	if (d > 0.5) {
+		for (log = 1; to_power(base, log) < d; ++log) ;
+		return log;
+	}
+
+	for (log = 0; d < 0.5; --log) {
+		d *= base;
+	}
+
+	return log;
+}
+
 /* TODO: how to #if sizeof(double) == sizeof(uint_64) anyway? */
 #if 1
 #define eh_double_to_fields eh_double64_endian_little_radix_2_to_fields
@@ -568,7 +586,7 @@ static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
 	/* crude rounding */
 	f = f + (0.5 / to_power(base, past_decimal));
 
-	exp_base = (int16_t)ceil(log10(f));
+	exp_base = (int16_t)ceil_log(base, f);
 
 	if (exp_base > 0) {
 		digits = (sign + exp_base + 1 + past_decimal);

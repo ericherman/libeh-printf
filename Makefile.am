@@ -24,7 +24,7 @@ check_PROGRAMS=\
  test-linux-print \
  test-simple
 
-T_COMMON_LDADD=libeh-printf.la -lm
+T_COMMON_LDADD=libeh-printf.la
 T_COMMON_SRC=$(include_HEADERS) tests/eh-printf-tests.h
 
 test_simple_SOURCES=tests/test-simple.c $(T_COMMON_SRC)
@@ -43,7 +43,7 @@ test_unsigned_SOURCES=tests/test-unsigned.c $(T_COMMON_SRC)
 test_unsigned_LDADD=$(T_COMMON_LDADD)
 
 test_floats_SOURCES=tests/test-floats.c $(T_COMMON_SRC)
-test_floats_LDADD=$(T_COMMON_LDADD)
+test_floats_LDADD=$(T_COMMON_LDADD) -lm
 
 test_str_SOURCES=tests/test-str.c $(T_COMMON_SRC)
 test_str_LDADD=$(T_COMMON_LDADD)
