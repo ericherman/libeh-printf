@@ -81,5 +81,6 @@ static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 					      unsigned char was_negative,
 					      unsigned long v);
 
-static size_t eh_double_to_ascii(double f, char *buf, size_t len,
-				 size_t past_decimal);
+static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
+				 unsigned char zero_padded, size_t field_size,
+				 size_t past_decimal, double f);

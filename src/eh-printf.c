@@ -86,13 +86,14 @@ int eh_vprintf(const char *format, va_list ap)
 }
 
 /* internals */
+#define Eh_default_float_decimal 6
 static int eh_vprintf_ctx(eh_output_char_func output_char,
 			  eh_output_str_func output_str, void *ctx,
 			  const char *format, va_list ap)
 {
 	size_t used, fmt_idx, fmt_len;
 	char buf[100];
-	int special;
+	int special, look_decimal;
 	unsigned char zero_padded;
 	size_t field_size, past_decimal;
 
@@ -111,7 +112,8 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 	fmt_idx = 0;
 	fmt_len = eh_strlen(format);
 	special = 0;
-	past_decimal = 6;
+	look_decimal = 0;
+	past_decimal = Eh_default_float_decimal;
 
 	while (fmt_idx < fmt_len) {
 
@@ -138,8 +140,13 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 			case '7':
 			case '8':
 			case '9':
-				field_size *= 10;
-				field_size += format[fmt_idx] - '0';
+				if (look_decimal) {
+					past_decimal *= 10;
+					past_decimal += format[fmt_idx] - '0';
+				} else {
+					field_size *= 10;
+					field_size += format[fmt_idx] - '0';
+				}
 				break;
 
 			case 'l':
@@ -203,9 +210,17 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 
 			case 'f':
 				f = (double)va_arg(ap, double);
-				eh_double_to_ascii(f, buf, 100, past_decimal);
+				eh_double_to_ascii(buf, 100, eh_decimal,
+						   zero_padded, field_size,
+						   past_decimal, f);
 				used += output_str(ctx, buf, eh_strlen(buf));
 				special = 0;
+				special = 0;
+				break;
+
+			case '.':
+				past_decimal = 0;
+				look_decimal = 1;
 				break;
 
 			default:
@@ -227,6 +242,8 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 			if (!special) {
 				zero_padded = 0;
 				field_size = 0;
+				look_decimal = 0;
+				past_decimal = Eh_default_float_decimal;
 			}
 		} else {
 			if (format[fmt_idx] == '%') {
@@ -491,13 +508,14 @@ static void eh_double64_endian_little_radix_2_to_fields(double d,
 	*fraction = d_ui64 & mant_mask;
 }
 
-static size_t eh_double_to_ascii(double f, char *buf, size_t len,
-				 size_t past_decimal)
+static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
+				 unsigned char zero_padded, size_t field_size,
+				 size_t past_decimal, double f)
 {
-	size_t u, w;
+	size_t u, w, digits;
 	int i;
 	uint8_t c, sign;
-	int16_t exponent, exp_base10;
+	int16_t exponent, exp_base;
 	uint64_t fraction;
 	double x, y;
 
@@ -515,12 +533,14 @@ static size_t eh_double_to_ascii(double f, char *buf, size_t len,
 	w = 0;
 	if (sign) {
 		f = (-f);
-		if (w < len) {
-			buf[w++] = '-';
-		}
 	}
 
 	if (exponent == 0x400) {
+		if (sign) {
+			if (w < len) {
+				buf[w++] = '-';
+			}
+		}
 		if (fraction) {
 			if (w < len) {
 				buf[w++] = 'n';
@@ -546,19 +566,57 @@ static size_t eh_double_to_ascii(double f, char *buf, size_t len,
 	}
 
 	/* crude rounding */
-	f = f + (0.5 / to_power(10, past_decimal));
+	f = f + (0.5 / to_power(base, past_decimal));
 
-	exp_base10 = (int16_t)ceil(log10(f));
+	exp_base = (int16_t)ceil(log10(f));
 
-	if (exp_base10 > 0) {
-		for (i = 0; i < exp_base10; ++i) {
-			x = to_power(10, ((int)exp_base10) - (1 + i));
+	if (exp_base > 0) {
+		digits = (sign + exp_base + 1 + past_decimal);
+	} else {
+		digits = (sign + 1 + 1 + past_decimal);
+	}
+	if ((field_size > 0) && (digits < field_size)) {
+		if (zero_padded && sign) {
+			if (w < len) {
+				buf[w++] = '-';
+			}
+		}
+		for (u = 0; u < (field_size - digits); ++u) {
+			if (w < len) {
+				buf[w++] = zero_padded ? '0' : ' ';
+			}
+		}
+		if ((!zero_padded) && sign) {
+			if (w < len) {
+				buf[w++] = '-';
+			}
+		}
+	} else if (sign) {
+		if (w < len) {
+			buf[w++] = '-';
+		}
+	}
+
+	if (exp_base > 0) {
+		for (i = 0; i < exp_base; ++i) {
+			x = to_power(base, ((int)exp_base) - (1 + i));
 			y = (f / x);
 			c = (uint8_t)y;
-			if (w < len) {
-				buf[w++] = '0' + (c % 10);
+			c = c % base;	/* should be a NO-OP */
+			if (c < 10) {
+				if (w < len) {
+					buf[w++] = '0' + c;
+				}
+			} else {
+				if (w < len) {
+					buf[w++] = 'A' + (c - 10);
+				}
 			}
 			f = f - (c * x);
+		}
+	} else {
+		if (w < len) {
+			buf[w++] = '0';
 		}
 	}
 	if (past_decimal) {
@@ -566,10 +624,17 @@ static size_t eh_double_to_ascii(double f, char *buf, size_t len,
 			buf[w++] = '.';
 		}
 		for (u = 0; u < past_decimal; ++u) {
-			f *= 10;
+			f *= base;
 			c = (uint8_t)f;
-			if (w < len) {
-				buf[w++] = '0' + (c % 10);
+			c = c % base;	/* should be a NO-OP */
+			if (c < 10) {
+				if (w < len) {
+					buf[w++] = '0' + c;
+				}
+			} else {
+				if (w < len) {
+					buf[w++] = 'A' + (c - 10);
+				}
 			}
 			f = (f - c);
 		}

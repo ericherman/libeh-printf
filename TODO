@@ -3,8 +3,7 @@ libeh-printf TODO
 * the linux specific code is included in the build... I suspect there is an
   autotools way to only include it if it if we are building on linux
 
-* eh_printf() does not support %f very well, need to add zero padding and
-  decimal place specification
+* eh_printf() does supports %f reasonably well, but does not support all
 
 * the functions "double ceil(double x)" and "double log10(double x)" require
   the "#include <math.h>" .... would be nice to break this requirement

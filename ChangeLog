@@ -1,6 +1,6 @@
 2017-07-16  Eric Herman <eric@freesa.org>
 
-	Sketch-in primative support for %f
+	Add reasonable support for %f
 	As spedified in "man 3 snprintf" truncation should result in
 	"size" characters being written.
 
