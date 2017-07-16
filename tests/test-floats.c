@@ -21,22 +21,26 @@ License (COPYING) along with this library; if not, see:
 #include "../src/eh-printf.h"
 #include "eh-printf-tests.h"
 
+#include <math.h>
+
+#define Cmp_with_libc1(fmt, x) \
+	eh_snprintf(actual, 80, fmt, x); \
+	sprintf(expect, fmt, x); \
+	failures += check_str(actual, expect)
+
 int main(void)
 {
 	char expect[80];
 	char actual[80];
 	int failures;
-	double f;
 
-	f = 123.4;
-	eh_snprintf(actual, 80, "%f", f);
-	sprintf(expect, "%f", f);
-	failures = check_str(actual, expect);
+	failures = 0;
 
-	f = -123.4;
-	eh_snprintf(actual, 80, "%f", f);
-	sprintf(expect, "%f", f);
-	failures += check_str(actual, expect);
+	Cmp_with_libc1("%f", 123.4);
+	Cmp_with_libc1("%f", -123.4);
+	Cmp_with_libc1("%f", 1.0/0.0);
+	Cmp_with_libc1("%f", -1.0/0.0);
+	Cmp_with_libc1("%f", sqrt(-1.0));
 
 	return failures ? 1 : 0;
 }
