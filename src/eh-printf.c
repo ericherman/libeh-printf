@@ -253,6 +253,8 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 	return used;
 }
 
+#undef Eh_default_float_decimal
+
 static size_t eh_buf_output_char(void *ctx, char c)
 {
 	struct buf_context *buf;
@@ -497,13 +499,13 @@ static int ceil_log(unsigned base, double d)
 
 /* is "unsigned long" 64 bit? */
 #if (ULONG_MAX > 4294967295UL)	/* unsigned long is probably 64 bit */
-#define sign_mask 0x8000000000000000UL
-#define rexp_mask 0x07FFUL
-#define mant_mask 0x000FFFFFFFFFFFFFUL
+#define eh_sign_mask 0x8000000000000000UL
+#define eh_rexp_mask 0x07FFUL
+#define eh_mant_mask 0x000FFFFFFFFFFFFFUL
 #else /* we need LONG LONG */
-#define sign_mask 0x8000000000000000ULL
-#define rexp_mask 0x07FFULL
-#define mant_mask 0x000FFFFFFFFFFFFFULL
+#define eh_sign_mask 0x8000000000000000ULL
+#define eh_rexp_mask 0x07FFULL
+#define eh_mant_mask 0x000FFFFFFFFFFFFFULL
 #endif
 static void eh_double64_endian_little_radix_2_to_fields(double d,
 							uint8_t *sign,
@@ -520,11 +522,15 @@ static void eh_double64_endian_little_radix_2_to_fields(double d,
 	pun_f.d = d;
 	d_ui64 = pun_f.ul;
 
-	*sign = (d_ui64 & sign_mask) ? 1U : 0U;
-	raw_exp = (uint16_t)(d_ui64 >> 52U & rexp_mask);
+	*sign = (d_ui64 & eh_sign_mask) ? 1U : 0U;
+	raw_exp = (uint16_t)(d_ui64 >> 52U & eh_rexp_mask);
 	*exponent = ((int16_t)raw_exp) - 1023L;
-	*fraction = d_ui64 & mant_mask;
+	*fraction = d_ui64 & eh_mant_mask;
 }
+
+#undef eh_sign_mask
+#undef eh_rexp_mask
+#undef eh_mant_mask
 
 static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
 				 unsigned char zero_padded, size_t field_size,
