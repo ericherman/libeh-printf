@@ -19,6 +19,8 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
 
+#include "config.h"
+
 /*
  * a byte is at least 8 bits, but *may* be more ...
  * thus use CHAR_BIT from limits.h
@@ -78,3 +80,6 @@ static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 					      size_t field_size,
 					      unsigned char was_negative,
 					      unsigned long v);
+
+static size_t eh_double_to_ascii(double f, char *buf, size_t len,
+				 size_t past_decimal);

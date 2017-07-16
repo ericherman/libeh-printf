@@ -22,6 +22,14 @@ License (COPYING) along with this library; if not, see:
 #include "eh-printf-private.h"
 #include "eh-sys-context.h"
 
+#if HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
+#if HAVE_MATH_H
+#include <math.h>
+#endif
+
 int eh_snprintf(char *dest, size_t size, const char *format, ...)
 {
 	va_list ap;
@@ -86,7 +94,7 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 	char buf[100];
 	int special;
 	unsigned char zero_padded;
-	size_t field_size;
+	size_t field_size, past_decimal;
 
 	/* supported types */
 	char *s;
@@ -95,7 +103,7 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 	unsigned int u;
 	long l;
 	unsigned long int lu;
-	/* double f; */
+	double f;
 
 	zero_padded = 0;
 	field_size = 0;
@@ -103,6 +111,7 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 	fmt_idx = 0;
 	fmt_len = eh_strlen(format);
 	special = 0;
+	past_decimal = 6;
 
 	while (fmt_idx < fmt_len) {
 
@@ -189,6 +198,13 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 				used +=
 				    eh_append(output_char, output_str, ctx,
 					      field_size, s);
+				special = 0;
+				break;
+
+			case 'f':
+				f = (double)va_arg(ap, double);
+				eh_double_to_ascii(f, buf, 100, past_decimal);
+				used += output_str(ctx, buf, eh_strlen(buf));
 				special = 0;
 				break;
 
@@ -426,3 +442,142 @@ static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 }
 
 #undef EH_LONG_BASE2_ASCII_BUF_SIZE
+
+static double to_power(unsigned base, unsigned exp)
+{
+	double v;
+
+	v = 1;
+	while (exp--) {
+		v *= base;
+	}
+
+	return v;
+}
+
+/* TODO: how to #if sizeof(double) == sizeof(uint_64) anyway? */
+#if 1
+#define eh_double_to_fields eh_double64_endian_little_radix_2_to_fields
+#endif
+
+/* is "unsigned long" 64 bit? */
+#if (ULONG_MAX > 4294967295UL)	/* unsigned long is probably 64 bit */
+#define sign_mask 0x8000000000000000UL
+#define rexp_mask 0x07FFUL
+#define mant_mask 0x000FFFFFFFFFFFFFUL
+#else /* we need LONG LONG */
+#define sign_mask 0x8000000000000000ULL
+#define rexp_mask 0x07FFULL
+#define mant_mask 0x000FFFFFFFFFFFFFULL
+#endif
+static void eh_double64_endian_little_radix_2_to_fields(double d,
+							uint8_t * sign,
+							int16_t * exponent,
+							uint64_t * fraction)
+{
+	union eh_float64_u {
+		double d;
+		uint64_t ul;
+	} pun_f;
+	int16_t raw_exp;
+	uint64_t d_ui64;
+
+	pun_f.d = d;
+	d_ui64 = pun_f.ul;
+
+	*sign = (d_ui64 & sign_mask) ? 1U : 0U;
+	raw_exp = (uint16_t) (d_ui64 >> 52U & rexp_mask);
+	*exponent = ((int16_t) raw_exp) - 1023L;
+	*fraction = d_ui64 & mant_mask;
+}
+
+static size_t eh_double_to_ascii(double f, char *buf, size_t len,
+				 size_t past_decimal)
+{
+	size_t u, w;
+	int i;
+	uint8_t c, sign;
+	int16_t exponent, exp_base10;
+	uint64_t fraction;
+	double x, y;
+
+	if (!buf) {
+		return 0;
+	}
+
+	/* NULL-padding just makes debug easier */
+	for (u = 0; u < len; ++u) {
+		buf[u] = '\0';
+	}
+
+	eh_double_to_fields(f, &sign, &exponent, &fraction);
+
+	w = 0;
+	if (sign) {
+		f = (-f);
+		if (w < len) {
+			buf[w++] = '-';
+		}
+	}
+
+	if (exponent == 0x400) {
+		if (fraction) {
+			if (w < len) {
+				buf[w++] = 'n';
+			}
+			if (w < len) {
+				buf[w++] = 'a';
+			}
+			if (w < len) {
+				buf[w++] = 'n';
+			}
+		} else {
+			if (w < len) {
+				buf[w++] = 'i';
+			}
+			if (w < len) {
+				buf[w++] = 'n';
+			}
+			if (w < len) {
+				buf[w++] = 'f';
+			}
+		}
+		return w;
+	}
+
+	/* crude rounding */
+	f = f + (0.5 / to_power(10, past_decimal));
+
+	exp_base10 = (int16_t) ceil(log10(f));
+
+	if (exp_base10 > 0) {
+		for (i = 0; i < exp_base10; ++i) {
+			x = to_power(10, (((int)exp_base10) - (1 + i)));
+			y = (f / x);
+			c = (uint8_t) y;
+			if (w < len) {
+				buf[w++] = '0' + (c % 10);
+			}
+			f = f - (c * x);
+		}
+	}
+	if (past_decimal) {
+		if (w < len) {
+			buf[w++] = '.';
+		}
+		for (u = 0; u < past_decimal; ++u) {
+			f *= 10;
+			c = (uint8_t) f;
+			if (w < len) {
+				buf[w++] = '0' + (c % 10);
+			}
+			f = (f - c);
+		}
+	}
+
+	if (w < len) {
+		buf[w] = '\0';
+	}
+
+	return w;
+}

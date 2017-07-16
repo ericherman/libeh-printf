@@ -1,6 +1,6 @@
 /*
-eh-sys-contxt.h - definine system specific functions needed by printf
-Copyright (C) 2016 Eric Herman
+test-floats.c
+Copyright (C) 2017 Eric Herman
 
 This work is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,30 +17,26 @@ You should have received a copy of the GNU Lesser General Public
 License (COPYING) along with this library; if not, see:
 
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
-
 */
-#ifndef EH_SYS_CONTEXT
-#define EH_SYS_CONTEXT
+#include "../src/eh-printf.h"
+#include "eh-printf-tests.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+int main(void)
+{
+	char expect[80];
+	char actual[80];
+	int failures;
+	double f;
 
-#include "config.h"
-#if HAVE_STDDEF_H
-#include <stddef.h>
-#endif
+	f = 123.4;
+	eh_snprintf(actual, 80, "%f", f);
+	sprintf(expect, "%f", f);
+	failures = check_str(actual, expect);
 
-void *start_sys_printf_context(void);
+	f = -123.4;
+	eh_snprintf(actual, 80, "%f", f);
+	sprintf(expect, "%f", f);
+	failures += check_str(actual, expect);
 
-int end_sys_printf_context(void *ctx);
-
-size_t eh_sys_output_char(void *ctx, char c);
-
-size_t eh_sys_output_str(void *ctx, const char *str, size_t len);
-
-#ifdef __cplusplus
+	return failures ? 1 : 0;
 }
-#endif
-
-#endif /* EH_SYS_CONTEXT */

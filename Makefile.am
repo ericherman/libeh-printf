@@ -1,9 +1,16 @@
 lib_LTLIBRARIES=libeh-printf.la
-libeh_printf_la_SOURCES=src/eh-printf.c src/eh-sys-context-linux.c
+libeh_printf_la_SOURCES=\
+ config.h \
+ src/eh-printf.h \
+ src/eh-sys-context.h \
+ src/eh-printf-private.h \
+ src/eh-printf.c \
+ src/eh-sys-context-linux.c
 
-include_HEADERS=src/eh-printf.h src/eh-sys-context.h src/eh-printf-private.h
+include_HEADERS=src/eh-printf.h
 
-AM_CFLAGS=-std=c89 -pipe -O2 -fomit-frame-pointer -ggdb -Wall -Wextra -Wpedantic -Werror
+AM_CFLAGS=-std=c89 -pipe -O2 -fomit-frame-pointer -ggdb \
+ -Wall -Wextra -Wpedantic -Werror -Wno-long-long
 
 TESTS=$(check_PROGRAMS)
 check_PROGRAMS=\
@@ -12,12 +19,13 @@ check_PROGRAMS=\
  test-pct5d \
  test-unsigned \
  test-str \
+ test-floats \
  test-linux-write \
  test-linux-print \
  test-simple
 
-T_COMMON_LDADD=libeh-printf.la
-T_COMMON_SRC=src/eh-printf.h tests/eh-printf-tests.h
+T_COMMON_LDADD=libeh-printf.la -lm
+T_COMMON_SRC=$(include_HEADERS) tests/eh-printf-tests.h
 
 test_simple_SOURCES=tests/test-simple.c $(T_COMMON_SRC)
 test_simple_LDADD=$(T_COMMON_LDADD)
@@ -33,6 +41,9 @@ test_pct5d_LDADD=$(T_COMMON_LDADD)
 
 test_unsigned_SOURCES=tests/test-unsigned.c $(T_COMMON_SRC)
 test_unsigned_LDADD=$(T_COMMON_LDADD)
+
+test_floats_SOURCES=tests/test-floats.c $(T_COMMON_SRC)
+test_floats_LDADD=$(T_COMMON_LDADD)
 
 test_str_SOURCES=tests/test-str.c $(T_COMMON_SRC)
 test_str_LDADD=$(T_COMMON_LDADD)
@@ -73,5 +84,6 @@ valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind -q ./test-pct5d
 	libtool --mode=execute valgrind -q ./test-unsigned
 	libtool --mode=execute valgrind -q ./test-str
+	libtool --mode=execute valgrind -q ./test-floats
 	libtool --mode=execute valgrind -q ./test-linux-write
 	libtool --mode=execute valgrind -q ./test-linux-print

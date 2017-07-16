@@ -1,11 +1,17 @@
 2017-07-16  Eric Herman <eric@freesa.org>
 
+	Sketch-in primative support for %f
 	As spedified in "man 3 snprintf" truncation should result in
 	"size" characters being written.
 
 	* src/eh-printf.h: Document behavior specified in man 3 snprintf
-	* src/eh-printf.c: Make behavior match spec
+	* src/eh-printf.c: sketch-in "%f" support, snprintf return val
+	* src/eh-printf-private.h: eh_double_to_ascii
+	* tests/test-floats.c: test %f for a positive and negative
+	* configure.ac: ceil, log10, uint*_t
+	* Makefile.am: add tests, add -lm for ceil, log10
 	* misc/pre-tidy.patch: respin for comments
+	* TODO: mention ceil and log10
 
 2016-10-31  Eric Herman <eric@freesa.org>
 
