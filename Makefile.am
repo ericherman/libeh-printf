@@ -20,6 +20,7 @@ check_PROGRAMS=\
  test-unsigned \
  test-str \
  test-floats \
+ test-misc \
  test-linux-write \
  test-linux-print \
  test-simple
@@ -44,6 +45,9 @@ test_unsigned_LDADD=$(T_COMMON_LDADD)
 
 test_floats_SOURCES=tests/test-floats.c $(T_COMMON_SRC)
 test_floats_LDADD=$(T_COMMON_LDADD) -lm
+
+test_misc_SOURCES=tests/test-misc.c $(T_COMMON_SRC)
+test_misc_LDADD=$(T_COMMON_LDADD)
 
 test_str_SOURCES=tests/test-str.c $(T_COMMON_SRC)
 test_str_LDADD=$(T_COMMON_LDADD)
@@ -89,5 +93,6 @@ valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind -q ./test-unsigned
 	libtool --mode=execute valgrind -q ./test-str
 	libtool --mode=execute valgrind -q ./test-floats
+	libtool --mode=execute valgrind -q ./test-misc
 	libtool --mode=execute valgrind -q ./test-linux-write
 	libtool --mode=execute valgrind -q ./test-linux-print

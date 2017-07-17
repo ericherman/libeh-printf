@@ -177,6 +177,7 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 				special = 0;
 				break;
 
+			case 'i':
 			case 'd':
 				if (special > 1) {
 					l = va_arg(ap, long int);
