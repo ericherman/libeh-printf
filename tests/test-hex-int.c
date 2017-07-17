@@ -21,16 +21,33 @@ License (COPYING) along with this library; if not, see:
 #include "../src/eh-printf.h"
 #include "eh-printf-tests.h"
 
-int main(void)
+#include <stdlib.h>
+
+#define Cmp_with_libc1(fmt, x) \
+	eh_snprintf(actual, 80, fmt, x); \
+	sprintf(expect, fmt, x); \
+	failures += check_str_m(actual, expect, fmt); \
+	if (verbose) { \
+		printf(" format: '%s'\n actual: '%s'\n expect: '%s'\n", \
+			fmt, actual, expect); \
+	}
+
+int main(int argc, char **argv)
 {
 	char expect[80];
 	char actual[80];
-	int failures;
+	int failures, verbose;
 
-	eh_snprintf(actual, 80, "%X", 23);
-	sprintf(expect, "%X", 23);
+	failures = 0;
+	verbose = (argc > 1) ? atoi(argv[1]) : 0;
 
-	failures = check_str(actual, expect);
+	Cmp_with_libc1("%X", 23);
+	Cmp_with_libc1("%#010x", 23);
+	Cmp_with_libc1("%#010x", 1);
+	Cmp_with_libc1("0x%08x", 2);
+	Cmp_with_libc1("%#08x", 5);
+	Cmp_with_libc1("%04x", 1234);
+	Cmp_with_libc1("%04X", 1234);
 
 	return failures ? 1 : 0;
 }

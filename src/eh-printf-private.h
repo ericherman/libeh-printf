@@ -51,6 +51,11 @@ enum eh_base {
 	eh_hex = 16
 };
 
+enum eh_upper {
+	eh_lower = 0,
+	eh_upper = 1
+};
+
 static int eh_vprintf_ctx(eh_output_char_func output_char,
 			  eh_output_str_func output_str, void *ctx,
 			  const char *format, va_list ap);
@@ -66,21 +71,27 @@ static size_t eh_append(eh_output_char_func output_char,
 static size_t eh_strlen(const char *str);
 
 static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
+			       unsigned char alt_form,
 			       unsigned char zero_padded, size_t field_size,
 			       long val);
 
 static size_t eh_unsigned_long_to_ascii(char *dest, size_t dest_size,
 					enum eh_base base,
+					enum eh_upper upper,
+					unsigned char alt_form,
 					unsigned char zero_padded,
 					size_t field_size, unsigned long val);
 
 static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 					      enum eh_base base,
+					      enum eh_upper upper,
+					      unsigned char alt_form,
 					      unsigned char zero_padded,
 					      size_t field_size,
 					      unsigned char was_negative,
 					      unsigned long v);
 
 static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
+				 unsigned char alt_form,
 				 unsigned char zero_padded, size_t field_size,
 				 size_t past_decimal, double f);

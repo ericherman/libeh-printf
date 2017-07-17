@@ -9,7 +9,9 @@ libeh_printf_la_SOURCES=\
 
 include_HEADERS=src/eh-printf.h
 
-AM_CFLAGS=-std=c89 -pipe -O2 -fomit-frame-pointer -ggdb \
+C_STD=-std=c89
+
+AM_CFLAGS=$(C_STD) -pipe -O2 -fomit-frame-pointer -ggdb \
  -Wall -Wextra -Wpedantic -Werror -Wno-long-long
 
 TESTS=$(check_PROGRAMS)

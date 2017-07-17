@@ -90,7 +90,8 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 	size_t used, fmt_idx, fmt_len;
 	char buf[100];
 	int special, look_decimal;
-	unsigned char zero_padded;
+	enum eh_upper upper;
+	unsigned char zero_padded, alt_form;
 	size_t field_size, past_decimal;
 
 	/* supported types */
@@ -102,8 +103,10 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 	unsigned long int lu;
 	double f;
 
+	upper = eh_upper;
 	zero_padded = 0;
 	field_size = 0;
+	alt_form = 0;
 	used = 0;
 	fmt_idx = 0;
 	fmt_len = eh_strlen(format);
@@ -151,14 +154,19 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 
 			case 'x':
 			case 'X':
+				upper =
+				    (format[fmt_idx] ==
+				     'X') ? eh_upper : eh_lower;
 				if (special > 1) {
-					l = va_arg(ap, long int);
+					l = va_arg(ap, long unsigned);
 				} else {
-					d = va_arg(ap, int);
+					d = va_arg(ap, unsigned);
 					l = d;
 				}
-				eh_long_to_ascii(buf, 100, eh_hex,
-						 zero_padded, field_size, l);
+				eh_unsigned_long_to_ascii(buf, 100, eh_hex,
+							  upper, alt_form,
+							  zero_padded,
+							  field_size, l);
 				used += output_str(ctx, buf, eh_strlen(buf));
 				special = 0;
 				break;
@@ -171,6 +179,7 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 					lu = u;
 				}
 				eh_unsigned_long_to_ascii(buf, 100, eh_decimal,
+							  eh_lower, alt_form,
 							  zero_padded,
 							  field_size, lu);
 				used += output_str(ctx, buf, eh_strlen(buf));
@@ -185,7 +194,7 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 					d = va_arg(ap, int);
 					l = d;
 				}
-				eh_long_to_ascii(buf, 100, eh_decimal,
+				eh_long_to_ascii(buf, 100, eh_decimal, alt_form,
 						 zero_padded, field_size, l);
 				used += output_str(ctx, buf, eh_strlen(buf));
 				special = 0;
@@ -208,10 +217,9 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 			case 'f':
 				f = (double)va_arg(ap, double);
 				eh_double_to_ascii(buf, 100, eh_decimal,
-						   zero_padded, field_size,
-						   past_decimal, f);
+						   alt_form, zero_padded,
+						   field_size, past_decimal, f);
 				used += output_str(ctx, buf, eh_strlen(buf));
-				special = 0;
 				special = 0;
 				break;
 
@@ -220,14 +228,21 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 				look_decimal = 1;
 				break;
 
+			case '#':
+				alt_form = 1;
+				break;
+
 			default:
 				/* unhandled */
 				used += output_char(ctx, '%');
+				if (alt_form) {
+					used += output_char(ctx, '#');
+				}
 				if (zero_padded) {
 					used += output_char(ctx, '0');
 				}
 				l = field_size;
-				eh_long_to_ascii(buf, 100, eh_decimal,
+				eh_long_to_ascii(buf, 100, eh_decimal, 0,
 						 0, 0, field_size);
 				used += output_str(ctx, buf, eh_strlen(buf));
 				used += output_char(ctx, format[fmt_idx]);
@@ -239,7 +254,9 @@ static int eh_vprintf_ctx(eh_output_char_func output_char,
 			if (!special) {
 				zero_padded = 0;
 				field_size = 0;
+				alt_form = 0;
 				look_decimal = 0;
+				upper = eh_upper;
 				past_decimal = Eh_default_float_decimal;
 			}
 		} else {
@@ -342,6 +359,7 @@ static size_t eh_strlen(const char *str)
 }
 
 static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
+			       unsigned char alt_form,
 			       unsigned char zero_padded, size_t field_size,
 			       long val)
 {
@@ -354,37 +372,43 @@ static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 		was_negative = 0;
 	}
 
-	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base,
+	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base, eh_upper,
+					       alt_form,
 					       zero_padded, field_size,
 					       was_negative,
 					       (unsigned long int)val);
 }
 
 static size_t eh_unsigned_long_to_ascii(char *dest, size_t dest_size,
-					enum eh_base base,
+					enum eh_base base, enum eh_upper upper,
+					unsigned char alt_form,
 					unsigned char zero_padded,
 					size_t field_size, unsigned long val)
 {
 	unsigned char was_negative = 0;
 
-	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base,
+	return eh_unsigned_long_to_ascii_inner(dest, dest_size, base, upper,
+					       alt_form,
 					       zero_padded, field_size,
 					       was_negative,
 					       (unsigned long int)val);
 }
 
 #define EH_LONG_BASE2_ASCII_BUF_SIZE \
-	((EH_CHAR_BIT * sizeof(unsigned long int)) + 1)
+	((EH_CHAR_BIT * sizeof(unsigned long int)) + 1 + 2 + 1)
 
 static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 					      enum eh_base base,
+					      enum eh_upper upper,
+					      unsigned char alt_form,
 					      unsigned char zero_padded,
 					      size_t field_size,
 					      unsigned char was_negative,
 					      unsigned long v)
 {
-	size_t i, j;
+	size_t i, j, extra;
 	unsigned long int d, b;
+	char a;
 	char reversed_buf[EH_LONG_BASE2_ASCII_BUF_SIZE];
 
 	/* huh? */
@@ -399,6 +423,7 @@ static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 		field_size = (dest_size - 1);
 	}
 
+	a = upper ? 'A' : 'a';
 	b = ((unsigned long int)base);
 
 	i = 0;
@@ -408,7 +433,7 @@ static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 		if (d < 10) {
 			reversed_buf[i++] = '0' + d;
 		} else {
-			reversed_buf[i++] = 'A' + (d - 10);
+			reversed_buf[i++] = a + (d - 10);
 		}
 	}
 
@@ -434,7 +459,12 @@ static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 	if (zero_padded && base == eh_decimal && was_negative) {
 		dest[j++] = '-';
 	}
-	while (j < (field_size - i)) {
+	if (zero_padded && base == eh_hex && alt_form) {
+		dest[j++] = '0';
+		dest[j++] = (upper == eh_upper) ? 'X' : 'x';
+	}
+	extra = (alt_form && base == eh_hex) ? 0 : 0;
+	while (j < (field_size - (i + extra))) {
 		dest[j++] = (zero_padded) ? '0' : ' ';
 	}
 	if (!zero_padded && base == eh_decimal && was_negative) {
@@ -443,6 +473,10 @@ static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 		} else {
 			dest[j++] = '-';
 		}
+	}
+	if (!zero_padded && base == eh_hex && alt_form) {
+		dest[j++] = '0';
+		dest[j++] = (upper == eh_upper) ? 'X' : 'x';
 	}
 
 	/* walk the reversed_buf backwards */
@@ -534,10 +568,11 @@ static void eh_double64_endian_little_radix_2_to_fields(double d,
 #undef eh_mant_mask
 
 static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
+				 unsigned char alt_form,
 				 unsigned char zero_padded, size_t field_size,
 				 size_t past_decimal, double f)
 {
-	size_t u, w, digits;
+	size_t u, w, digits, extra;
 	int i;
 	uint8_t c, sign;
 	int16_t exponent, exp_base;
@@ -594,11 +629,11 @@ static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
 	f = f + (0.5 / to_power(base, past_decimal));
 
 	exp_base = (int16_t)ceil_log(base, f);
-
+	extra = alt_form ? 0 : 0;
 	if (exp_base > 0) {
-		digits = (sign + exp_base + 1 + past_decimal);
+		digits = (sign + exp_base + 1 + past_decimal) + extra;
 	} else {
-		digits = (sign + 1 + 1 + past_decimal);
+		digits = (sign + 1 + 1 + past_decimal) + extra;
 	}
 	if ((field_size > 0) && (digits < field_size)) {
 		if (zero_padded && sign) {
@@ -628,14 +663,8 @@ static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
 			y = (f / x);
 			c = (uint8_t)y;
 			c = c % base;	/* should be a NO-OP */
-			if (c < 10) {
-				if (w < len) {
-					buf[w++] = '0' + c;
-				}
-			} else {
-				if (w < len) {
-					buf[w++] = 'A' + (c - 10);
-				}
+			if (w < len) {
+				buf[w++] = '0' + c;
 			}
 			f = f - (c * x);
 		}
@@ -652,14 +681,8 @@ static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
 			f *= base;
 			c = (uint8_t)f;
 			c = c % base;	/* should be a NO-OP */
-			if (c < 10) {
-				if (w < len) {
-					buf[w++] = '0' + c;
-				}
-			} else {
-				if (w < len) {
-					buf[w++] = 'A' + (c - 10);
-				}
+			if (w < len) {
+				buf[w++] = '0' + c;
 			}
 			f = (f - c);
 		}

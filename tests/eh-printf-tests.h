@@ -25,8 +25,8 @@ License (COPYING) along with this library; if not, see:
 #include <stdio.h>
 #include <string.h>
 
-int ehpf_check_str(const char *file, int line, const char *actual,
-		   const char *expected)
+static int ehpf_check_str_m(const char *file, int line, const char *actual,
+			    const char *expected, const char *msg)
 {
 	if (actual == expected) {
 		return 0;
@@ -35,12 +35,15 @@ int ehpf_check_str(const char *file, int line, const char *actual,
 	    && (strcmp(expected, actual) == 0)) {
 		return 0;
 	}
-	fprintf(stderr, "FAIL: Expected '%s' but was '%s' [%s:%d]\n",
-		expected, actual, file, line);
+	fprintf(stderr, "FAIL: %s%sExpected '%s' but was '%s' [%s:%d]\n",
+		msg == NULL ? "" : msg, msg == NULL ? "" : " ", expected,
+		actual, file, line);
 	return 1;
 }
 
-#define check_str(actual, expected)\
- ehpf_check_str(__FILE__, __LINE__, actual, expected)
+#define check_str_m(actual, expected, msg)\
+ ehpf_check_str_m(__FILE__, __LINE__, actual, expected, msg)
+
+#define check_str(actual, expected) check_str_m(actual, expected, NULL)
 
 #endif /* EH_PRINTF_TESTS */
