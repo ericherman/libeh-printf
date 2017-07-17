@@ -70,17 +70,35 @@ static size_t eh_append(eh_output_char_func output_char,
 
 static size_t eh_strlen(const char *str);
 
+static size_t eh_int_to_ascii(char *dest, size_t dest_size, enum eh_base base,
+			      unsigned char alt_form, unsigned char zero_padded,
+			      size_t field_size, int val);
+
 static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 			       unsigned char alt_form,
 			       unsigned char zero_padded, size_t field_size,
 			       long val);
 
+static size_t eh_unsigned_int_to_ascii(char *dest, size_t dest_size,
+				       enum eh_base base, enum eh_upper upper,
+				       unsigned char alt_form,
+				       unsigned char zero_padded,
+				       size_t field_size, unsigned int val);
+
 static size_t eh_unsigned_long_to_ascii(char *dest, size_t dest_size,
-					enum eh_base base,
-					enum eh_upper upper,
+					enum eh_base base, enum eh_upper upper,
 					unsigned char alt_form,
 					unsigned char zero_padded,
 					size_t field_size, unsigned long val);
+
+static size_t eh_unsigned_int_to_ascii_inner(char *dest, size_t dest_size,
+					     enum eh_base base,
+					     enum eh_upper upper,
+					     unsigned char alt_form,
+					     unsigned char zero_padded,
+					     size_t field_size,
+					     unsigned char was_negative,
+					     unsigned int v);
 
 static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 					      enum eh_base base,
@@ -91,7 +109,6 @@ static size_t eh_unsigned_long_to_ascii_inner(char *dest, size_t dest_size,
 					      unsigned char was_negative,
 					      unsigned long v);
 
-static size_t eh_double_to_ascii(char *buf, size_t len, enum eh_base base,
-				 unsigned char alt_form,
+static size_t eh_double_to_ascii(char *buf, size_t len, unsigned char alt_form,
 				 unsigned char zero_padded, size_t field_size,
 				 size_t past_decimal, double f);

@@ -4,3 +4,5 @@ libeh-printf TODO
   autotools way to only include it if it if we are building on linux
 
 * eh_printf() does supports %f reasonably well, but does not support all
+
+* test INT_MIN LONG_MIN
