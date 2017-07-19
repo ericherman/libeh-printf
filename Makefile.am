@@ -3,8 +3,10 @@ libeh_printf_la_SOURCES=\
  config.h \
  src/eh-printf.h \
  src/eh-sys-context.h \
+ src/eh-parse-float.h \
  src/eh-printf-private.h \
  src/eh-printf.c \
+ src/eh-parse-float.c \
  src/eh-sys-context-linux.c
 
 include_HEADERS=src/eh-printf.h
@@ -25,6 +27,7 @@ check_PROGRAMS=\
  test-misc \
  test-linux-write \
  test-linux-print \
+ test-parse-float \
  test-simple
 
 T_COMMON_LDADD=libeh-printf.la
@@ -54,6 +57,10 @@ test_misc_LDADD=$(T_COMMON_LDADD)
 test_str_SOURCES=tests/test-str.c $(T_COMMON_SRC)
 test_str_LDADD=$(T_COMMON_LDADD)
 
+test_parse_float_SOURCES=src/eh-parse-float.h tests/test-parse-float.c \
+ $(T_COMMON_SRC)
+test_parse_float_LDADD=$(T_COMMON_LDADD)
+
 test_linux_write_SOURCES=tests/test-linux-write.c $(T_COMMON_SRC)
 test_linux_write_LDADD=$(T_COMMON_LDADD)
 test_linux_write_CFLAGS=$(AM_CFLAGS) -std=gnu89
@@ -78,6 +85,7 @@ tidy:
 		-T uint8_t \
 		-T uint16_t \
 		-T uint64_t \
+		-T int8_t \
 		-T int16_t \
 		`find src tests -name '*.h' -o -name '*.c' -o -name '*.cpp'`
 	patch -Rp1 -i misc/pre-tidy.patch
@@ -96,5 +104,6 @@ valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind -q ./test-str
 	libtool --mode=execute valgrind -q ./test-floats
 	libtool --mode=execute valgrind -q ./test-misc
+	libtool --mode=execute valgrind -q ./test-parse-float
 	libtool --mode=execute valgrind -q ./test-linux-write
 	libtool --mode=execute valgrind -q ./test-linux-print

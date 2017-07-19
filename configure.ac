@@ -11,7 +11,7 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_PROG_CC
 
 # Checks for header files.
-AC_CHECK_HEADERS([stddef.h stdint.h])
+AC_CHECK_HEADERS([float.h limits.h stdarg.h stddef.h stdint.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T

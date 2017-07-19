@@ -673,46 +673,6 @@ static int ceil_log(unsigned base, double d)
 	return log;
 }
 
-/* TODO: how to #if sizeof(double) == sizeof(uint_64) anyway? */
-#if 1
-#define eh_double_to_fields eh_double64_endian_little_radix_2_to_fields
-#endif
-
-/* is "unsigned long" 64 bit? */
-#if (ULONG_MAX > 4294967295UL)	/* unsigned long is probably 64 bit */
-#define eh_sign_mask 0x8000000000000000UL
-#define eh_rexp_mask 0x07FFUL
-#define eh_mant_mask 0x000FFFFFFFFFFFFFUL
-#else /* we need LONG LONG */
-#define eh_sign_mask 0x8000000000000000ULL
-#define eh_rexp_mask 0x07FFULL
-#define eh_mant_mask 0x000FFFFFFFFFFFFFULL
-#endif
-static void eh_double64_endian_little_radix_2_to_fields(double d,
-							uint8_t *sign,
-							int16_t *exponent,
-							uint64_t *fraction)
-{
-	union eh_float64_u {
-		double d;
-		uint64_t ul;
-	} pun_f;
-	int16_t raw_exp;
-	uint64_t d_ui64;
-
-	pun_f.d = d;
-	d_ui64 = pun_f.ul;
-
-	*sign = (d_ui64 & eh_sign_mask) ? 1U : 0U;
-	raw_exp = (uint16_t)(d_ui64 >> 52U & eh_rexp_mask);
-	*exponent = ((int16_t)raw_exp) - 1023L;
-	*fraction = d_ui64 & eh_mant_mask;
-}
-
-#undef eh_sign_mask
-#undef eh_rexp_mask
-#undef eh_mant_mask
-
 static size_t eh_double_to_ascii(char *buf, size_t len, unsigned char alt_form,
 				 unsigned char zero_padded, size_t field_size,
 				 size_t past_decimal, double f)

@@ -26,7 +26,10 @@ License (COPYING) along with this library; if not, see:
 extern "C" {
 #endif
 
+#if HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 #if HAVE_STDDEF_H
 #include <stddef.h>
 #endif

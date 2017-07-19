@@ -19,7 +19,11 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
 
+#if HAVE_CONFIG_H
 #include "config.h"
+#endif
+
+#include "eh-parse-float.h"
 
 /*
  * a byte is at least 8 bits, but *may* be more ...
@@ -30,9 +34,20 @@ License (COPYING) along with this library; if not, see:
 #ifdef CHAR_BIT
 #define EH_CHAR_BIT CHAR_BIT
 #else
+#if HAVE_LIMITS_H
 #include <limits.h>
 #define EH_CHAR_BIT CHAR_BIT
+#else
+#define EH_CHAR_BIT 8
 #endif
+#endif
+#endif
+
+/* is "unsigned long" 64 bit? */
+#if (ULONG_MAX > 4294967295UL)	/* unsigned long is probably 64 bit */
+#define EH_LONG_IS_AT_LEAST_64_BIT 1
+#else
+#define EH_LONG_IS_AT_LEAST_64_BIT 0
 #endif
 
 typedef size_t (eh_output_char_func) (void *ctx, char c);

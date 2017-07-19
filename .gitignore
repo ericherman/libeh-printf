@@ -6,6 +6,7 @@ test-unsigned
 test-str
 test-floats
 test-misc
+test-parse-float
 test-linux-write
 test-linux-print
 
