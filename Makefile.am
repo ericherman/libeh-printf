@@ -11,7 +11,7 @@ libeh_printf_la_SOURCES=\
 
 include_HEADERS=src/eh-printf.h
 
-C_STD=-std=c89
+C_STD=-std=gnu89
 
 AM_CFLAGS=$(C_STD) -pipe -O2 -fomit-frame-pointer -ggdb \
  -Wall -Wextra -Wpedantic -Werror -Wno-long-long -I./src
@@ -27,6 +27,7 @@ check_PROGRAMS=\
  test-misc \
  test-linux-write \
  test-linux-print \
+ test-linux-fprintf \
  test-parse-float \
  test-simple
 
@@ -60,6 +61,10 @@ test_str_LDADD=$(T_COMMON_LDADD)
 test_parse_float_SOURCES=src/eh-parse-float.h tests/test-parse-float.c \
  $(T_COMMON_SRC)
 test_parse_float_LDADD=$(T_COMMON_LDADD)
+
+test_linux_fprintf_SOURCES=tests/test-linux-fprintf.c $(T_COMMON_SRC)
+test_linux_fprintf_LDADD=$(T_COMMON_LDADD)
+test_linux_fprintf_CFLAGS=$(AM_CFLAGS) -std=gnu89
 
 test_linux_write_SOURCES=tests/test-linux-write.c $(T_COMMON_SRC)
 test_linux_write_LDADD=$(T_COMMON_LDADD)
@@ -108,3 +113,4 @@ valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind -q ./test-parse-float
 	libtool --mode=execute valgrind -q ./test-linux-write
 	libtool --mode=execute valgrind -q ./test-linux-print
+	libtool --mode=execute valgrind -q ./test-linux-fprintf

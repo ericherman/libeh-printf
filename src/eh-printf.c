@@ -18,6 +18,20 @@ License (COPYING) along with this library; if not, see:
 
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
+
+#if (!defined(EH_PRINTF_SKIP_FPRINTF))
+
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if (HAVE_FILE_NO && !defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE))
+#define _POSIX_SOURCE 1
+#include <stdio.h>
+#endif
+
+#endif /* (!defined(EH_PRINTF_SKIP_FPRINTF)) */
+
 #include "eh-printf.h"
 #include "eh-printf-private.h"
 #include "eh-printf-sys-context.h"
@@ -63,7 +77,6 @@ int eh_printf(const char *format, ...)
 	rv = eh_vprintf(format, ap);
 	va_end(ap);
 	return rv;
-
 }
 
 size_t eh_sys_output_void_char(void *ctx, char c)
@@ -76,12 +89,12 @@ size_t eh_sys_output_void_str(void *ctx, const char *str, size_t len)
 	return eh_sys_output_str((struct eh_printf_context_s *)ctx, str, len);
 }
 
-int eh_vprintf(const char *format, va_list ap)
+int eh_vfdprintf(int fd, const char *format, va_list ap)
 {
 	int rv;
 	struct eh_printf_context_s ctx;
 
-	ctx = start_sys_printf_context(EH_PRINTF_SYSOUT_FILENO);
+	ctx = start_sys_printf_context(fd);
 
 	rv = eh_vprintf_ctx(eh_sys_output_void_char, eh_sys_output_void_str,
 			    &ctx, format, ap);
@@ -90,6 +103,28 @@ int eh_vprintf(const char *format, va_list ap)
 
 	return rv;
 }
+
+int eh_vprintf(const char *format, va_list ap)
+{
+	return eh_vfdprintf(EH_PRINTF_SYSOUT_FILENO, format, ap);
+}
+
+#if (!defined(EH_PRINTF_SKIP_FPRINTF))
+int eh_vfprintf(FILE *stream, const char *format, va_list ap)
+{
+	return eh_vfdprintf(fileno(stream), format, ap);
+}
+
+int eh_fprintf(FILE *stream, const char *format, ...)
+{
+	va_list ap;
+	int rv;
+	va_start(ap, format);
+	rv = eh_vfprintf(stream, format, ap);
+	va_end(ap);
+	return rv;
+}
+#endif /* (!defined(EH_PRINTF_SKIP_FPRINTF)) */
 
 /* internals */
 #define Eh_default_float_decimal 6
