@@ -20,7 +20,7 @@ License (COPYING) along with this library; if not, see:
 */
 #include "eh-parse-float.h"
 
-#if (!defined EH_SKIP_FLOAT64)
+#if (!defined EH_PRINTF_SKIP_FLOAT64)
 #if (EH_LONG_IS_AT_LEAST_64_BIT)
 #define eh_sign_mask 0x8000000000000000UL
 #define eh_rexp_mask 0x7FF0000000000000UL
@@ -54,7 +54,7 @@ void eh_float64_radix_2_to_fields(Eh_float64 d, uint8_t *sign,
 #undef eh_frac_mask
 #endif
 
-#if (!defined EH_SKIP_FLOAT32)
+#if (!defined EH_PRINTF_SKIP_FLOAT32)
 void eh_float32_radix_2_to_fields(Eh_float32 d, uint8_t *sign,
 				  int16_t *exponent, uint64_t *fraction)
 {
