@@ -40,22 +40,30 @@ Sketch uses 4,182 bytes (12%) of program storage space. Maximum is 32,256 bytes.
 
 extern "C" {
 
-void *start_sys_printf_context()
+int EH_SYSOUT_FILENO = 1;
+int EH_SYSERR_FILENO = 1;
+
+struct eh_printf_context_s start_sys_printf_context(int fileno);
 {
-	return &SERIAL_OBJ;
+	struct eh_printf_context_s ctx;
+	ctx.fileno = fileno;
+	ctx.error = 0;
+	ctx.data = &SERIAL_OBJ;
+	return ctx;
 }
 
-int end_sys_printf_context(void *ctx)
+int end_sys_printf_context(struct eh_printf_context_s *ctx)
 {
-	return ctx ? 0 : 1;
+	return (ctx & ctx->error == 0) ? 0 : 1;
 }
 
-size_t eh_sys_output_char(void *ctx, char c)
+size_t eh_sys_output_char(struct eh_printf_context_s *ctx, char c)
 {
 	return eh_sys_output_str(ctx, &c, 1);
 }
 
-size_t eh_sys_output_str(void *ctx, const char *buf, size_t len)
+size_t eh_sys_output_str(struct eh_printf_context_s *ctx, const char *str,
+			 size_t len)
 {
 	if (ctx == NULL) {
 		return (size_t)(-1L);

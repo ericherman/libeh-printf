@@ -66,17 +66,27 @@ int eh_printf(const char *format, ...)
 
 }
 
+size_t eh_sys_output_void_char(void *ctx, char c)
+{
+	return eh_sys_output_char((struct eh_printf_context_s *)ctx, c);
+}
+
+size_t eh_sys_output_void_str(void *ctx, const char *str, size_t len)
+{
+	return eh_sys_output_str((struct eh_printf_context_s *)ctx, str, len);
+}
+
 int eh_vprintf(const char *format, va_list ap)
 {
 	int rv;
-	void *ctx;
+	struct eh_printf_context_s ctx;
 
-	ctx = start_sys_printf_context();
+	ctx = start_sys_printf_context(EH_SYSOUT_FILENO);
 
-	rv = eh_vprintf_ctx(eh_sys_output_char, eh_sys_output_str, &ctx, format,
-			    ap);
+	rv = eh_vprintf_ctx(eh_sys_output_void_char, eh_sys_output_void_str,
+			    &ctx, format, ap);
 
-	end_sys_printf_context(ctx);
+	end_sys_printf_context(&ctx);
 
 	return rv;
 }

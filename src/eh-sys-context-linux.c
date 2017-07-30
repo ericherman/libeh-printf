@@ -28,24 +28,30 @@ License (COPYING) along with this library; if not, see:
 int EH_SYSOUT_FILENO = STDOUT_FILENO;
 int EH_SYSERR_FILENO = STDERR_FILENO;
 
-int context;
-
-void *start_sys_printf_context()
+struct eh_printf_context_s start_sys_printf_context(int fileno)
 {
-	context = 0;
-	return &context;
+	struct eh_printf_context_s ctx;
+
+	ctx.error = 0;
+	ctx.data = NULL;
+
+	if (fileno < 1) {
+		ctx.fileno = EH_SYSOUT_FILENO;
+	} else {
+		ctx.fileno = fileno;
+	}
+
+	return ctx;
 }
 
-int end_sys_printf_context(void *ctx)
+int end_sys_printf_context(struct eh_printf_context_s *ctx)
 {
-	int *save_errno;
 	char *msg;
 	size_t len;
 	int rv;
 
-	save_errno = (int *)ctx;
-	if (save_errno && *save_errno) {
-		msg = strerror(*save_errno);
+	if (ctx && ctx->error) {
+		msg = strerror(ctx->error);
 		len = strlen(msg);
 		rv = write(EH_SYSERR_FILENO, msg, len);
 		if (rv > 0) {
@@ -58,22 +64,24 @@ int end_sys_printf_context(void *ctx)
 	return 0;
 }
 
-size_t eh_sys_output_char(void *ctx, char c)
+size_t eh_sys_output_char(struct eh_printf_context_s *ctx, char c)
 {
 	return eh_sys_output_str(ctx, &c, 1);
 }
 
-size_t eh_sys_output_str(void *ctx, const char *buf, size_t len)
+size_t eh_sys_output_str(struct eh_printf_context_s *ctx, const char *buf,
+			 size_t len)
 {
 	int rv;
-	int *save_errno;
 
-	save_errno = (int *)ctx;
+	if (!ctx) {
+		return 0;
+	}
 
-	rv = write(EH_SYSOUT_FILENO, buf, len);
+	rv = write(ctx->fileno, buf, len);
 	if (rv < 0) {
-		if (save_errno && *save_errno == 0) {
-			*save_errno = errno;
+		if (ctx->error == 0) {
+			ctx->error = errno;
 		}
 		return 0;
 	}

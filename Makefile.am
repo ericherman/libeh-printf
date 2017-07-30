@@ -87,6 +87,7 @@ tidy:
 		-T uint64_t \
 		-T int8_t \
 		-T int16_t \
+		-T eh_printf_context_s \
 		`find src tests -name '*.h' -o -name '*.c' -o -name '*.cpp'`
 	patch -Rp1 -i misc/pre-tidy.patch
 

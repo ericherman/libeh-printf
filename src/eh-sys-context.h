@@ -34,13 +34,24 @@ extern "C" {
 #include <stddef.h>
 #endif
 
-void *start_sys_printf_context(void);
+/* not all systems have separate OUT and ERR */
+extern int EH_SYSOUT_FILENO;
+extern int EH_SYSERR_FILENO;
 
-int end_sys_printf_context(void *ctx);
+struct eh_printf_context_s {
+	int error;
+	int fileno;		/* not all systems support files by number */
+	void *data;		/* not all systems will need an opaque ptr */
+};
 
-size_t eh_sys_output_char(void *ctx, char c);
+struct eh_printf_context_s start_sys_printf_context(int fileno);
 
-size_t eh_sys_output_str(void *ctx, const char *str, size_t len);
+int end_sys_printf_context(struct eh_printf_context_s *ctx);
+
+size_t eh_sys_output_char(struct eh_printf_context_s *ctx, char c);
+
+size_t eh_sys_output_str(struct eh_printf_context_s *ctx, const char *str,
+			 size_t len);
 
 #ifdef __cplusplus
 }

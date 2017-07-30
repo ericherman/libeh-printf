@@ -54,6 +54,8 @@ int main(int argc, char **argv)
 	Cmp_with_libc2("%d %i", 3, 23);
 	Cmp_with_libc2("%X %x", -3, 23);
 	Cmp_with_libc2("%#X %#x", -5, 37);
+	Cmp_with_libc1("%#02lx", -537L);
+	Cmp_with_libc1("%#2f", 4211.0);
 
 	return failures ? 1 : 0;
 }

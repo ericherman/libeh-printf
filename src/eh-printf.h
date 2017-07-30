@@ -32,6 +32,10 @@ extern "C" {
 /* Returns the number of characters printed (excluding the null byte). */
 int eh_printf(const char *format, ...);
 
+/*
+int eh_fprintf(const char *format, ...);
+*/
+
 /* Returns the number of characters printed (excluding the null byte).
    If the output  was truncated  due  to  this  limit  then the return
    value is the number of characters (excluding the terminating null
@@ -41,6 +45,10 @@ int eh_printf(const char *format, ...);
 int eh_snprintf(char *str, size_t size, const char *format, ...);
 
 int eh_vprintf(const char *format, va_list ap);
+
+/*
+int eh_vfprintf(const char *format, va_list ap);
+*/
 
 int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap);
 

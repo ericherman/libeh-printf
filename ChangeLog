@@ -1,3 +1,17 @@
+2017-07-30  Eric Herman <eric@freesa.org>
+
+	Prepair for fprintf, make print context more sophisticated.
+	define struct eh_printf_context_s
+
+	* src/eh-printf.h: comments
+	* src/eh-sys-context-arduino.cpp: eh_printf_context_s
+	* src/eh-sys-context-linux.c: eh_printf_context_s
+	* src/eh-sys-context.h: eh_printf_context_s
+	* tests/test-linux-write.c: eh_printf_context_s
+	* tests/test-misc.c: float modifiers seem to be ignored
+	* Makefile.am: eh_printf_context_s
+	* misc/pre-tidy.patch: respin
+
 2017-07-19  Eric Herman <eric@freesa.org>
 
 	Foundation for supporting 8bit CPUs: 32bit doubles

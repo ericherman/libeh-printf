@@ -38,8 +38,6 @@ License (COPYING) along with this library; if not, see:
 #include "../src/eh-sys-context.h"
 #include "eh-printf-tests.h"
 
-extern int EH_SYSOUT_FILENO;
-
 int main(void)
 {
 	char actual[80];
@@ -49,7 +47,7 @@ int main(void)
 	char file[PATH_MAX];
 	FILE *f;
 	size_t length, num_read;
-	void *ctx;
+	struct eh_printf_context_s ctx;
 
 	failures = 0;
 	orig_fd = EH_SYSOUT_FILENO;
@@ -58,16 +56,16 @@ int main(void)
 	snprintf(fd_path, PATH_MAX, "/proc/self/fd/%d", fd);
 	EH_SYSOUT_FILENO = fd;
 
-	ctx = start_sys_printf_context();
+	ctx = start_sys_printf_context(EH_SYSOUT_FILENO);
 
-	eh_sys_output_char(ctx, 'f');
-	eh_sys_output_char(ctx, 'o');
-	eh_sys_output_char(ctx, 'o');
-	eh_sys_output_char(ctx, '\n');
+	eh_sys_output_char(&ctx, 'f');
+	eh_sys_output_char(&ctx, 'o');
+	eh_sys_output_char(&ctx, 'o');
+	eh_sys_output_char(&ctx, '\n');
 
-	eh_sys_output_str(ctx, "bar\n", 4);
+	eh_sys_output_str(&ctx, "bar\n", 4);
 
-	end_sys_printf_context(ctx);
+	end_sys_printf_context(&ctx);
 
 	EH_SYSOUT_FILENO = orig_fd;
 
