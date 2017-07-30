@@ -1,5 +1,5 @@
 /*
-eh-sys-contxt.h - definine system specific functions needed by printf
+eh-printf-sys-contxt.h - definine system specific functions needed by printf
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 
 */
-#ifndef EH_SYS_CONTEXT
-#define EH_SYS_CONTEXT
+#ifndef EH_PRINTF_SYS_CONTEXT
+#define EH_PRINTF_SYS_CONTEXT
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,8 +35,8 @@ extern "C" {
 #endif
 
 /* not all systems have separate OUT and ERR */
-extern int EH_SYSOUT_FILENO;
-extern int EH_SYSERR_FILENO;
+extern int EH_PRINTF_SYSOUT_FILENO;
+extern int EH_PRINTF_SYSERR_FILENO;
 
 struct eh_printf_context_s {
 	int error;
@@ -57,4 +57,4 @@ size_t eh_sys_output_str(struct eh_printf_context_s *ctx, const char *str,
 }
 #endif
 
-#endif /* EH_SYS_CONTEXT */
+#endif /* EH_PRINTF_SYS_CONTEXT */

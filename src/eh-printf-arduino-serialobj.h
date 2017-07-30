@@ -16,8 +16,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SERIALOBJ_H
-#define SERIALOBJ_H
+#ifndef EH_PRINTF_ARDUINO_SERIALOBJ_H
+#define EH_PRINTF_ARDUINO_SERIALOBJ_H
 
 #include <Arduino.h>
 #include <HardwareSerial.h>
@@ -34,4 +34,4 @@
 #define SERIAL_OBJ Serial
 #endif
 
-#endif /* SERIALOBJ_H */
+#endif /* EH_PRINTF_ARDUINO_SERIALOBJ_H */

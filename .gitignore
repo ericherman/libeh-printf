@@ -78,5 +78,6 @@ m4/
 *.log
 *.trs
 *.log
+*.Tpo
 build-aux/
 .dirstamp

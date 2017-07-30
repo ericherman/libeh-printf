@@ -1,5 +1,5 @@
 /*
-eh-sys-context-arduino.cpp: Arduino specific system calls
+eh-printf-sys-context-arduino.cpp: Arduino specific system calls
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
@@ -35,13 +35,13 @@ Sketch uses 4,182 bytes (12%) of program storage space. Maximum is 32,256 bytes.
 
 */
 
-#include "eh-sys-context.h"
-#include "eh-arduino-serialobj.h"
+#include "eh-printf-sys-context.h"
+#include "eh-printf-arduino-serialobj.h"
 
 extern "C" {
 
-int EH_SYSOUT_FILENO = 1;
-int EH_SYSERR_FILENO = 1;
+int EH_PRINTF_SYSOUT_FILENO = 1;
+int EH_PRINTF_SYSERR_FILENO = 1;
 
 struct eh_printf_context_s start_sys_printf_context(int fileno);
 {

@@ -1,5 +1,5 @@
 /*
-eh-parse-float.h - headers for float field extraction
+eh-printf-parse-float.h - headers for float field extraction
 Copyright (C) 2017 Eric Herman
 
 This library is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
 
-#ifndef EH_PARSE_FLOAT_H
-#define EH_PARSE_FLOAT_H
+#ifndef EH_PRINTF_PARSE_FLOAT_H
+#define EH_PRINTF_PARSE_FLOAT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -120,4 +120,4 @@ void eh_float32_radix_2_to_fields(Eh_float32 d, uint8_t *sign,
 }
 #endif
 
-#endif /* EH_PARSE_FLOAT_H */
+#endif /* EH_PRINTF_PARSE_FLOAT_H */

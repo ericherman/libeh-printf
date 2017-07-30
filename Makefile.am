@@ -2,19 +2,19 @@ lib_LTLIBRARIES=libeh-printf.la
 libeh_printf_la_SOURCES=\
  config.h \
  src/eh-printf.h \
- src/eh-sys-context.h \
- src/eh-parse-float.h \
- src/eh-printf-private.h \
  src/eh-printf.c \
- src/eh-parse-float.c \
- src/eh-sys-context-linux.c
+ src/eh-printf-private.h \
+ src/eh-printf-parse-float.h \
+ src/eh-printf-parse-float.c \
+ src/eh-printf-sys-context.h \
+ src/eh-printf-sys-context-linux.c
 
 include_HEADERS=src/eh-printf.h
 
 C_STD=-std=c89
 
 AM_CFLAGS=$(C_STD) -pipe -O2 -fomit-frame-pointer -ggdb \
- -Wall -Wextra -Wpedantic -Werror -Wno-long-long
+ -Wall -Wextra -Wpedantic -Werror -Wno-long-long -I./src
 
 TESTS=$(check_PROGRAMS)
 check_PROGRAMS=\

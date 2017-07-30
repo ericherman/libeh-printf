@@ -20,7 +20,7 @@ License (COPYING) along with this library; if not, see:
 */
 #include "eh-printf.h"
 #include "eh-printf-private.h"
-#include "eh-sys-context.h"
+#include "eh-printf-sys-context.h"
 
 #if HAVE_STDINT_H
 #include <stdint.h>
@@ -81,7 +81,7 @@ int eh_vprintf(const char *format, va_list ap)
 	int rv;
 	struct eh_printf_context_s ctx;
 
-	ctx = start_sys_printf_context(EH_SYSOUT_FILENO);
+	ctx = start_sys_printf_context(EH_PRINTF_SYSOUT_FILENO);
 
 	rv = eh_vprintf_ctx(eh_sys_output_void_char, eh_sys_output_void_str,
 			    &ctx, format, ap);

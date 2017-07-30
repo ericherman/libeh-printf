@@ -1,5 +1,5 @@
 /*
-eh-printf-linux.c - linux specific system calls
+eh-printf-sys-context-linux.c - linux specific system calls
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
@@ -23,10 +23,10 @@ License (COPYING) along with this library; if not, see:
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
-#include "eh-sys-context.h"
+#include "eh-printf-sys-context.h"
 
-int EH_SYSOUT_FILENO = STDOUT_FILENO;
-int EH_SYSERR_FILENO = STDERR_FILENO;
+int EH_PRINTF_SYSOUT_FILENO = STDOUT_FILENO;
+int EH_PRINTF_SYSERR_FILENO = STDERR_FILENO;
 
 struct eh_printf_context_s start_sys_printf_context(int fileno)
 {
@@ -36,7 +36,7 @@ struct eh_printf_context_s start_sys_printf_context(int fileno)
 	ctx.data = NULL;
 
 	if (fileno < 1) {
-		ctx.fileno = EH_SYSOUT_FILENO;
+		ctx.fileno = EH_PRINTF_SYSOUT_FILENO;
 	} else {
 		ctx.fileno = fileno;
 	}
@@ -53,9 +53,9 @@ int end_sys_printf_context(struct eh_printf_context_s *ctx)
 	if (ctx && ctx->error) {
 		msg = strerror(ctx->error);
 		len = strlen(msg);
-		rv = write(EH_SYSERR_FILENO, msg, len);
+		rv = write(EH_PRINTF_SYSERR_FILENO, msg, len);
 		if (rv > 0) {
-			rv = write(EH_SYSERR_FILENO, "\n", 1);
+			rv = write(EH_PRINTF_SYSERR_FILENO, "\n", 1);
 		}
 		if (rv <= 0) {
 			return 1;

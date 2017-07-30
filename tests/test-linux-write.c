@@ -34,8 +34,8 @@ License (COPYING) along with this library; if not, see:
 #define O_TMPFILE_MASK (__O_TMPFILE | O_DIRECTORY | O_CREAT)
 #endif
 
-#include "../src/eh-printf.h"
-#include "../src/eh-sys-context.h"
+#include <eh-printf.h>
+#include <eh-printf-sys-context.h>
 #include "eh-printf-tests.h"
 
 int main(void)
@@ -50,13 +50,13 @@ int main(void)
 	struct eh_printf_context_s ctx;
 
 	failures = 0;
-	orig_fd = EH_SYSOUT_FILENO;
+	orig_fd = EH_PRINTF_SYSOUT_FILENO;
 
 	fd = open("/tmp", O_TMPFILE | O_RDWR, S_IRUSR | S_IWUSR);
 	snprintf(fd_path, PATH_MAX, "/proc/self/fd/%d", fd);
-	EH_SYSOUT_FILENO = fd;
+	EH_PRINTF_SYSOUT_FILENO = fd;
 
-	ctx = start_sys_printf_context(EH_SYSOUT_FILENO);
+	ctx = start_sys_printf_context(EH_PRINTF_SYSOUT_FILENO);
 
 	eh_sys_output_char(&ctx, 'f');
 	eh_sys_output_char(&ctx, 'o');
@@ -67,7 +67,7 @@ int main(void)
 
 	end_sys_printf_context(&ctx);
 
-	EH_SYSOUT_FILENO = orig_fd;
+	EH_PRINTF_SYSOUT_FILENO = orig_fd;
 
 	snprintf(file, PATH_MAX, "/tmp/proc_self_fd_%d", fd);
 	rv = linkat(AT_FDCWD, fd_path, AT_FDCWD, file, AT_SYMLINK_FOLLOW);

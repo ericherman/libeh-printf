@@ -34,11 +34,11 @@ License (COPYING) along with this library; if not, see:
 #define O_TMPFILE_MASK (__O_TMPFILE | O_DIRECTORY | O_CREAT)
 #endif
 
-#include "../src/eh-printf.h"
-#include "../src/eh-sys-context.h"
+#include <eh-printf.h>
+#include <eh-printf-sys-context.h>
 #include "eh-printf-tests.h"
 
-extern int EH_SYSOUT_FILENO;
+extern int EH_PRINTF_SYSOUT_FILENO;
 
 int main(void)
 {
@@ -51,15 +51,15 @@ int main(void)
 	size_t length, num_read;
 
 	failures = 0;
-	orig_fd = EH_SYSOUT_FILENO;
+	orig_fd = EH_PRINTF_SYSOUT_FILENO;
 
 	fd = open("/tmp", O_TMPFILE | O_RDWR, S_IRUSR | S_IWUSR);
 	snprintf(fd_path, PATH_MAX, "/proc/self/fd/%d", fd);
-	EH_SYSOUT_FILENO = fd;
+	EH_PRINTF_SYSOUT_FILENO = fd;
 
 	eh_printf("f%co\n%s\n", 'o', "bar");
 
-	EH_SYSOUT_FILENO = orig_fd;
+	EH_PRINTF_SYSOUT_FILENO = orig_fd;
 
 	snprintf(file, PATH_MAX, "/tmp/proc_self_fd_%d", fd);
 	rv = linkat(AT_FDCWD, fd_path, AT_FDCWD, file, AT_SYMLINK_FOLLOW);

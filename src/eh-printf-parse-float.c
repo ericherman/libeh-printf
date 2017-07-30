@@ -18,7 +18,7 @@ License (COPYING) along with this library; if not, see:
 
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
-#include "eh-parse-float.h"
+#include "eh-printf-parse-float.h"
 
 #if (!defined EH_PRINTF_SKIP_FLOAT64)
 #if (EH_LONG_IS_AT_LEAST_64_BIT)

@@ -18,12 +18,12 @@ License (COPYING) along with this library; if not, see:
 
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
-#include "../src/eh-printf.h"
+#include <eh-printf.h>
 #include "eh-printf-tests.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <float.h>
-#include "../src/eh-parse-float.h"
+#include <eh-printf-parse-float.h>
 
 #define Check_parse_float64(ul, e_sign, e_exp, e_frac) \
 	pun_d.u64 = ul; \
