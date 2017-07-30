@@ -25,6 +25,10 @@ License (COPYING) along with this library; if not, see:
 
 #include "eh-parse-float.h"
 
+#if HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
 /*
  * a byte is at least 8 bits, but *may* be more ...
  * thus use CHAR_BIT from limits.h
