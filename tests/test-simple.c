@@ -30,5 +30,9 @@ int main(void)
 
 	failures = check_str(buf, "foo:523%dbar");
 
+	eh_snprintf(buf, 80, "foo:%d %u %lu %ld\n", 0, 0, 0, 0);
+
+	failures += check_str(buf, "foo:0 0 0 0\n");
+
 	return failures ? 1 : 0;
 }
