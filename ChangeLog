@@ -1,3 +1,17 @@
+2017-08-13  Eric Herman <eric@freesa.org>
+
+	Add eh_dprintf and eh_vdprintf:
+
+		int eh_dprintf(int fd, const char *format, ...);
+		int eh_vdprintf(int fd, const char *format, va_list ap);
+
+	* src/eh-printf.h: headers
+	* src/eh-printf.c: (mostly rename previous impl)
+	* tests/test-linux-dprintf.c: test
+	* Makefile.am: add test
+	* .gitignore: ingnore test
+
+
 2017-08-12  Eric Herman <eric@freesa.org>
 
 	Support printing pointers

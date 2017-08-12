@@ -27,6 +27,7 @@ check_PROGRAMS=\
  test-misc \
  test-linux-write \
  test-linux-print \
+ test-linux-dprintf \
  test-linux-fprintf \
  test-parse-float \
  test-simple
@@ -65,6 +66,10 @@ test_parse_float_LDADD=$(T_COMMON_LDADD)
 test_linux_fprintf_SOURCES=tests/test-linux-fprintf.c $(T_COMMON_SRC)
 test_linux_fprintf_LDADD=$(T_COMMON_LDADD)
 test_linux_fprintf_CFLAGS=$(AM_CFLAGS) -std=gnu89
+
+test_linux_dprintf_SOURCES=tests/test-linux-dprintf.c $(T_COMMON_SRC)
+test_linux_dprintf_LDADD=$(T_COMMON_LDADD)
+test_linux_dprintf_CFLAGS=$(AM_CFLAGS) -std=gnu89
 
 test_linux_write_SOURCES=tests/test-linux-write.c $(T_COMMON_SRC)
 test_linux_write_LDADD=$(T_COMMON_LDADD)
@@ -113,4 +118,5 @@ valgrind: $(check_PROGRAMS)
 	libtool --mode=execute valgrind -q ./test-parse-float
 	libtool --mode=execute valgrind -q ./test-linux-write
 	libtool --mode=execute valgrind -q ./test-linux-print
+	libtool --mode=execute valgrind -q ./test-linux-dprintf
 	libtool --mode=execute valgrind -q ./test-linux-fprintf

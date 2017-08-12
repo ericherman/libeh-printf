@@ -9,6 +9,7 @@ test-misc
 test-parse-float
 test-linux-write
 test-linux-print
+test-linux-dprintf
 test-linux-fprintf
 
 ###################
