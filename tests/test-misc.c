@@ -56,6 +56,7 @@ int main(int argc, char **argv)
 	Cmp_with_libc2("%#X %#x", -5, 37);
 	Cmp_with_libc1("%#02lx", -537L);
 	Cmp_with_libc1("%#2f", 4211.0);
+	Cmp_with_libc1("%p", expect);
 
 	return failures ? 1 : 0;
 }

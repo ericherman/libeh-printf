@@ -1,3 +1,10 @@
+2017-08-12  Eric Herman <eric@freesa.org>
+
+	Support printing pointers
+
+	* src/eh-printf.c: support 'p'
+	* tests/test-misc.c: compare '%p' with glibc
+
 2017-07-30  Eric Herman <eric@freesa.org>
 
 	Prepair for fprintf, make print context more sophisticated.
