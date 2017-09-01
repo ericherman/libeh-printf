@@ -1,3 +1,20 @@
+2017-09-01  Eric Herman <eric@freesa.org>
+
+	printf was assuming 64 bit double with a magic number constant (which
+	would break on avr), now printf now uses a #define constant which is
+	appropriate for the size of double
+
+	add "eh_double_classify" functions and return the classification
+	in the call to parse_float()
+
+	replace magic numbers with declared constants
+	classification constants should match math.h
+
+	* src/eh-printf-parse-float.h: new functions, constants
+	* src/eh-printf-parse-float.c: the impls
+	* src/eh-printf.c: use constants, fix 32 bit bug
+	* misc/pre-tidy.patch: respin
+
 2017-08-13  Eric Herman <eric@freesa.org>
 
 	Add eh_dprintf and eh_vdprintf:

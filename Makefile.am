@@ -11,7 +11,7 @@ libeh_printf_la_SOURCES=\
 
 include_HEADERS=src/eh-printf.h
 
-C_STD=-std=gnu89
+C_STD=-std=c89
 
 AM_CFLAGS=$(C_STD) -pipe -O2 -fomit-frame-pointer -ggdb \
  -Wall -Wextra -Wpedantic -Werror -Wno-long-long -I./src
