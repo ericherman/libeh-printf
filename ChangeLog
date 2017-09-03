@@ -1,3 +1,14 @@
+2017-09-03  Eric Herman <eric@freesa.org>
+
+	fix function inconsistencies: size of fraction, and context pointers
+
+	* src/eh-printf-parse-float.h: fraction is now always a uint64_t
+	* src/eh-printf-parse-float.c: fix 32/64 issue; make consistent
+	* src/eh-printf-sys-context.h: start_sys_printf_context pass in *ctx
+	* src/eh-printf-sys-context-linux.c: pass in ctx
+	* src/eh-printf.c: pass in ctx
+	* tests/test-linux-write.c: pass in ctx
+
 2017-09-01  Eric Herman <eric@freesa.org>
 
 	printf was assuming 64 bit double with a magic number constant (which

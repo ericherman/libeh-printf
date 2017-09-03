@@ -56,7 +56,7 @@ int main(void)
 	snprintf(fd_path, PATH_MAX, "/proc/self/fd/%d", fd);
 	EH_PRINTF_SYSOUT_FILENO = fd;
 
-	ctx = start_sys_printf_context(EH_PRINTF_SYSOUT_FILENO);
+	start_sys_printf_context(&ctx, EH_PRINTF_SYSOUT_FILENO);
 
 	eh_sys_output_char(&ctx, 'f');
 	eh_sys_output_char(&ctx, 'o');
