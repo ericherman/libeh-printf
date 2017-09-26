@@ -19,6 +19,21 @@ License (COPYING) along with this library; if not, see:
         https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
 */
 #include "eh-printf-parse-float.h"
+#include <string.h>		/* memcpy */
+
+static uint32_t eh_float32_to_uint32(Eh_float32 d)
+{
+	uint32_t u32;
+	memcpy(&u32, &d, sizeof(Eh_float32));
+	return u32;
+}
+
+static uint64_t eh_float64_to_uint64(Eh_float64 d)
+{
+	uint64_t u64;
+	memcpy(&u64, &d, sizeof(Eh_float64));
+	return u64;
+}
 
 #if (!defined EH_PRINTF_SKIP_FLOAT64)
 #if (EH_LONG_IS_AT_LEAST_64_BIT)
@@ -33,15 +48,10 @@ License (COPYING) along with this library; if not, see:
 int eh_float64_radix_2_to_fields(Eh_float64 d, uint8_t *sign,
 				 int16_t *exponent, uint64_t *fraction)
 {
-	union eh_float64_u {
-		Eh_float64 d;
-		uint64_t ul;
-	} pun_f;
 	int16_t raw_exp;
 	uint64_t d_u64;
 
-	pun_f.d = d;
-	d_u64 = pun_f.ul;
+	d_u64 = eh_float64_to_uint64(d);
 
 	*sign = (d_u64 & eh_sign_mask) ? 1U : 0U;
 	raw_exp = ((d_u64 & eh_rexp_mask) >> 52UL);
@@ -60,10 +70,6 @@ int eh_float64_radix_2_to_fields(Eh_float64 d, uint8_t *sign,
 int eh_float32_radix_2_to_fields(Eh_float32 d, uint8_t *sign,
 				 int16_t *exponent, uint64_t *fraction)
 {
-	union eh_float32_u {
-		Eh_float32 d;
-		uint32_t ul;
-	} pun_f;
 	uint32_t sign_mask, rexp_mask, frac_mask;
 	uint16_t raw_exp;
 	uint32_t d_u32;
@@ -72,8 +78,7 @@ int eh_float32_radix_2_to_fields(Eh_float32 d, uint8_t *sign,
 	rexp_mask = 0x7F800000UL;
 	frac_mask = 0x007FFFFFUL;
 
-	pun_f.d = d;
-	d_u32 = pun_f.ul;
+	d_u32 = eh_float32_to_uint32(d);
 
 	*sign = (d_u32 & sign_mask) ? 1U : 0U;
 	raw_exp = ((d_u32 & rexp_mask) >> 23U);
