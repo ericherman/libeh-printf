@@ -21,20 +21,6 @@ License (COPYING) along with this library; if not, see:
 #include "eh-printf-parse-float.h"
 #include <string.h>		/* memcpy */
 
-static uint32_t eh_float32_to_uint32(Eh_float32 d)
-{
-	uint32_t u32;
-	memcpy(&u32, &d, sizeof(Eh_float32));
-	return u32;
-}
-
-static uint64_t eh_float64_to_uint64(Eh_float64 d)
-{
-	uint64_t u64;
-	memcpy(&u64, &d, sizeof(Eh_float64));
-	return u64;
-}
-
 #if (!defined EH_PRINTF_SKIP_FLOAT64)
 #if (EH_LONG_IS_AT_LEAST_64_BIT)
 #define eh_sign_mask 0x8000000000000000UL
@@ -45,6 +31,13 @@ static uint64_t eh_float64_to_uint64(Eh_float64 d)
 #define eh_rexp_mask 0x7FF0000000000000ULL
 #define eh_frac_mask 0x000FFFFFFFFFFFFFULL
 #endif
+static uint64_t eh_float64_to_uint64(Eh_float64 d)
+{
+	uint64_t u64;
+	memcpy(&u64, &d, sizeof(Eh_float64));
+	return u64;
+}
+
 int eh_float64_radix_2_to_fields(Eh_float64 d, uint8_t *sign,
 				 int16_t *exponent, uint64_t *fraction)
 {
@@ -67,6 +60,13 @@ int eh_float64_radix_2_to_fields(Eh_float64 d, uint8_t *sign,
 #endif
 
 #if (!defined EH_PRINTF_SKIP_FLOAT32)
+static uint32_t eh_float32_to_uint32(Eh_float32 d)
+{
+	uint32_t u32;
+	memcpy(&u32, &d, sizeof(Eh_float32));
+	return u32;
+}
+
 int eh_float32_radix_2_to_fields(Eh_float32 d, uint8_t *sign,
 				 int16_t *exponent, uint64_t *fraction)
 {
