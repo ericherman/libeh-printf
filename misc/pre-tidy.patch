@@ -48,31 +48,6 @@
 +*/
  
  #endif /* EH_PRINTF_SYS_CONTEXT */
---- orig/src/eh-printf-parse-float.h
-+++ tidy/src/eh-printf-parse-float.h
-@@ -22,9 +22,11 @@
- #ifndef EH_PRINTF_PARSE_FLOAT_H
- #define EH_PRINTF_PARSE_FLOAT_H
- 
-+/*
- #ifdef __cplusplus
- extern "C" {
- #endif
-+*/
- 
- #if HAVE_CONFIG_H
- #include "config.h"
-@@ -154,8 +156,10 @@
- int eh_float32_classify(Eh_float32 f);
- #endif
- 
-+/*
- #ifdef __cplusplus
- }
- #endif
-+*/
- 
- #endif /* EH_PRINTF_PARSE_FLOAT_H */
 --- orig/src/eh-printf-sys-context-arduino.cpp
 +++ tidy/src/eh-printf-sys-context-arduino.cpp
 @@ -38,7 +38,9 @@
@@ -93,3 +68,28 @@
 +/*
 +} (* extern "C" *)
 +*/
+--- orig/src/efloat.h
++++ tidy/src/efloat.h
+@@ -29,9 +29,11 @@
+ #ifndef EFLOAT_H
+ #define EFLOAT_H
+ 
++/*
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
++*/
+ 
+ #if HAVE_CONFIG_H
+ #include <config.h>
+@@ -231,8 +233,10 @@
+ #define efloat_double_exp_inf_nan efloat64_r2_exp_inf_nan
+ #endif
+ 
++/*
+ #ifdef __cplusplus
+ }
+ #endif
++*/
+ 
+ #endif /* EFLOAT_H */

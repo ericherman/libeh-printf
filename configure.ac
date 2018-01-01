@@ -11,17 +11,30 @@ AC_CONFIG_MACRO_DIRS([m4])
 AC_PROG_CC
 
 # Checks for header files.
-AC_CHECK_HEADERS([float.h limits.h stdarg.h stddef.h stdint.h stdio.h])
+AC_CHECK_HEADERS([\
+errno.h \
+float.h \
+limits.h \
+stdarg.h \
+stddef.h \
+stdint.h \
+stdio.h \
+string.h \
+])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
+AC_TYPE_INT8_T
 AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
 
 # Checks for library functions.
-AC_CHECK_FUNCS([sqrt fileno])
+AC_CHECK_FUNCS([sqrt fileno memcpy fprintf])
 
 AM_INIT_AUTOMAKE([subdir-objects -Werror -Wall])
 AM_PROG_AR

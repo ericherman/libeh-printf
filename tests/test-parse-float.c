@@ -23,7 +23,8 @@ License (COPYING) along with this library; if not, see:
 #include <stdlib.h>
 #include <stdint.h>
 #include <float.h>
-#include <eh-printf-parse-float.h>
+#include "config.h"
+#include <efloat.h>
 
 #define Check_parse_float64(ul, e_sign, e_exp, e_frac) \
 	pun_d.u64 = ul; \
@@ -33,8 +34,9 @@ License (COPYING) along with this library; if not, see:
 	if (verbose) { \
 		printf("expect %s\n", expect); \
 	} \
-	eh_float64_radix_2_to_fields(d, &sign, &exponent, &fraction); \
-	sprintf(actual, fmt, d, sign, exponent, fraction); \
+	efloat64_radix_2_to_fields(d, &fields64); \
+	sprintf(actual, fmt, d, fields64.sign, fields64.exponent, \
+		fields64.significand); \
 	failures += check_str(actual, expect)
 
 #define Check_parse_float32(u, e_sign, e_exp, e_frac) \
@@ -45,8 +47,9 @@ License (COPYING) along with this library; if not, see:
 	if (verbose) { \
 		printf("%s\n", expect); \
 	} \
-	eh_float32_radix_2_to_fields(f, &sign, &exponent, &fraction); \
-	sprintf(actual, fmt, f, sign, exponent, fraction); \
+	efloat32_radix_2_to_fields(f, &fields32); \
+	sprintf(actual, fmt, f, fields32.sign, fields32.exponent, \
+		fields32.significand); \
 	failures += check_str(actual, expect)
 
 int main(int argc, char **argv)
@@ -62,10 +65,12 @@ int main(int argc, char **argv)
 	} pun_f;
 	double d;
 	float f;
-	uint8_t sign, expect_sign;
-	int16_t exponent, expect_exp;
+	struct efloat64_fields fields64;
+	struct efloat32_fields fields32;
+	uint8_t expect_sign;
+	int16_t expect_exp;
 	uint32_t u32;
-	uint64_t fraction, expect_frac, u64;
+	uint64_t expect_frac, u64;
 	char *fmt;
 	char expect[80];
 	char actual[80];

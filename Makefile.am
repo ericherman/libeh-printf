@@ -4,8 +4,8 @@ libeh_printf_la_SOURCES=\
  src/eh-printf.h \
  src/eh-printf.c \
  src/eh-printf-private.h \
- src/eh-printf-parse-float.h \
- src/eh-printf-parse-float.c \
+ src/efloat.h \
+ src/efloat.c \
  src/eh-printf-sys-context.h \
  src/eh-printf-sys-context-linux.c
 

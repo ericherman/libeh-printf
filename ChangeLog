@@ -1,3 +1,19 @@
+2018-01-01  Eric Herman <eric@freesa.org>
+
+	extracted eh-printf-parse-float as libefloat
+	https://github.com/ericherman/libefloat
+
+	* src/efloat.h: copy from libefloat
+	* src/efloat.c: copy from libefloat
+	* src/eh-printf.c: use the new struct-based API provided by libefloat
+	* tests/test-parse-float.c: use new efloat API
+	* configure.ac: add types and headers needed by libefloat code
+	* src/eh-printf-private.h: reflect filename change
+	* Makefile.am: reflect filename changes
+	* misc/pre-tidy.patch: update to reflect efloat
+	* src/eh-printf-parse-float.h: deleted (replaced)
+	* src/eh-printf-parse-float.c: deleted (replaced)
+
 2017-09-03  Eric Herman <eric@freesa.org>
 
 	fix function inconsistencies: size of fraction, and context pointers
