@@ -98,6 +98,7 @@ tidy:
 		-T int8_t \
 		-T int16_t \
 		-T eh_printf_context_s \
+		-T efloat_class \
 		`find src tests -name '*.h' -o -name '*.c' -o -name '*.cpp'`
 	patch -Rp1 -i misc/pre-tidy.patch
 

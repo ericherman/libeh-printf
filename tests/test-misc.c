@@ -46,9 +46,11 @@ int main(int argc, char **argv)
 	char expect[80];
 	char actual[80];
 	int failures, verbose;
+	void *vptr;
 
 	failures = 0;
 	verbose = (argc > 1) ? atoi(argv[1]) : 0;
+	vptr = &verbose;
 
 	Cmp_with_libc2("%f %11.2f", 123.4, -0.456);
 	Cmp_with_libc2("%d %i", 3, 23);
@@ -56,7 +58,7 @@ int main(int argc, char **argv)
 	Cmp_with_libc2("%#X %#x", -5, 37);
 	Cmp_with_libc1("%#02lx", -537L);
 	Cmp_with_libc1("%#2f", 4211.0);
-	Cmp_with_libc1("%p", expect);
+	Cmp_with_libc1("%p", vptr);
 
 	return failures ? 1 : 0;
 }
