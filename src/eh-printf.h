@@ -23,7 +23,11 @@ License (COPYING) along with this library; if not, see:
 #define EH_PRINTF
 
 #ifdef __cplusplus
-extern "C" {
+#define Eh_printf_begin_C_functions extern "C" {
+#define Eh_printf_end_C_functions }
+#else
+#define Eh_printf_begin_C_functions
+#define Eh_printf_end_C_functions
 #endif
 
 #include <stddef.h>
@@ -33,6 +37,9 @@ extern "C" {
 #include <stdio.h>		/* FILE */
 #endif
 
+Eh_printf_begin_C_functions
+#undef Eh_printf_begin_C_functions
+/* functions */
 /* Returns the number of characters printed (excluding the null byte). */
 int eh_printf(const char *format, ...);
 
@@ -60,8 +67,6 @@ int eh_vfprintf(FILE *stream, const char *format, va_list ap);
 
 int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap);
 
-#ifdef __cplusplus
-}
-#endif
-
+Eh_printf_end_C_functions
+#undef Eh_printf_end_C_functions
 #endif /* EH_PRINTF */

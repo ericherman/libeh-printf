@@ -1,3 +1,20 @@
+2019-08-16  Eric Herman <eric@freesa.org>
+
+	update to latest libefloat
+	cleanup headers
+
+	* configure.ac: 1.0.0 -> 1.0.1
+	* src/efloat.c: update from upstream
+	* src/efloat.h: update from upstream
+	* src/eh-printf.c: use new efloat
+	* src/eh-printf.h: #defines for extern C
+	* tests/test-parse-float.c: use new efloat interface, skip f32 test
+	* src/eh-printf-sys-context-arduino.cpp: fix function to match new sig
+	* src/eh-printf-sys-context.h: #defines for extern C
+	* Makefile.am: update "tidy" target
+	* misc/pre-tidy.patch: deleted, obsolete
+
+
 2018-01-01  Eric Herman <eric@freesa.org>
 
 	extracted eh-printf-parse-float as libefloat

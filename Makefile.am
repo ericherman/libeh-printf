@@ -88,19 +88,14 @@ EXTRA_DIST=misc
 LINDENT=indent -npro -kr -i8 -ts8 -sob -l80 -ss -ncs -cp1 -il0
 
 tidy:
-	patch -Np1 -i misc/pre-tidy.patch
 	$(LINDENT) \
 		-T FILE \
-		-T size_t \
-		-T uint8_t \
-		-T uint16_t \
-		-T uint64_t \
-		-T int8_t \
-		-T int16_t \
+		-T size_t -T ssize_t \
+		-T uint8_t -T uint16_t -T uint32_t -T uint64_t \
+		-T int8_t -T int16_t -T int32_t -T int64_t \
 		-T eh_printf_context_s \
 		-T efloat_class \
 		`find src tests -name '*.h' -o -name '*.c' -o -name '*.cpp'`
-	patch -Rp1 -i misc/pre-tidy.patch
 
 spotless: clean
 	rm -rf `cat .gitignore | sed -e 's/#.*//'`

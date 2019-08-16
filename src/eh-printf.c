@@ -759,17 +759,15 @@ static size_t eh_double_to_ascii(char *buf, size_t len, unsigned char alt_form,
 	efloat_double_to_fields(f, &fields);
 
 	w = 0;
-	if (fields.sign) {
-		f = (-f);
-	}
+	f *= fields.sign;
 
 	if (fields.exponent == efloat_double_exp_inf_nan) {
-		if (fields.sign) {
+		if (fields.sign == -1) {
 			if (w < len) {
 				buf[w++] = '-';
 			}
 		}
-		if (fields.significand) {
+		if (fields.significand != 0x10000000000000) {
 			if (w < len) {
 				buf[w++] = 'n';
 			}
@@ -799,12 +797,14 @@ static size_t eh_double_to_ascii(char *buf, size_t len, unsigned char alt_form,
 	exp_base = (int16_t)ceil_log(10, f);
 	extra = alt_form ? 0 : 0;
 	if (exp_base > 0) {
-		digits = (fields.sign + exp_base + 1 + past_decimal) + extra;
+		digits = fields.sign == -1 ? 1 : 0;
+		digits += ((exp_base + 1 + past_decimal) + extra);
 	} else {
-		digits = (fields.sign + 1 + 1 + past_decimal) + extra;
+		digits = fields.sign == -1 ? 1 : 0;
+		digits += ((1 + 1 + past_decimal) + extra);
 	}
 	if ((field_size > 0) && (digits < field_size)) {
-		if (zero_padded && fields.sign) {
+		if (zero_padded && (fields.sign == -1)) {
 			if (w < len) {
 				buf[w++] = '-';
 			}
@@ -814,12 +814,12 @@ static size_t eh_double_to_ascii(char *buf, size_t len, unsigned char alt_form,
 				buf[w++] = zero_padded ? '0' : ' ';
 			}
 		}
-		if ((!zero_padded) && fields.sign) {
+		if ((!zero_padded) && (fields.sign == -1)) {
 			if (w < len) {
 				buf[w++] = '-';
 			}
 		}
-	} else if (fields.sign) {
+	} else if (fields.sign == -1) {
 		if (w < len) {
 			buf[w++] = '-';
 		}

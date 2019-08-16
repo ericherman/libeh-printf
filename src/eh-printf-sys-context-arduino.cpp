@@ -38,18 +38,20 @@ Sketch uses 4,182 bytes (12%) of program storage space. Maximum is 32,256 bytes.
 #include "eh-printf-sys-context.h"
 #include "eh-printf-arduino-serialobj.h"
 
-extern "C" {
+#define Eh_printf_sys_context_begin_C_functions extern "C" {
+#define Eh_printf_sys_context_end_C_functions }
 
+#Eh_printf_sys_context_begin_C_functions
+#undef #Eh_printf_sys_context_begin_C_functions
+/* most systems have different stdin & stdout, but not arduino */
 int EH_PRINTF_SYSOUT_FILENO = 1;
 int EH_PRINTF_SYSERR_FILENO = 1;
 
-struct eh_printf_context_s start_sys_printf_context(int fileno);
+void start_sys_printf_context(struct eh_printf_context_s *ctx, int fileno);
 {
-	struct eh_printf_context_s ctx;
-	ctx.fileno = fileno;
-	ctx.error = 0;
-	ctx.data = &SERIAL_OBJ;
-	return ctx;
+	ctx->fileno = fileno;
+	ctx->error = 0;
+	ctx->data = &SERIAL_OBJ;
 }
 
 int end_sys_printf_context(struct eh_printf_context_s *ctx)
@@ -72,4 +74,5 @@ size_t eh_sys_output_str(struct eh_printf_context_s *ctx, const char *str,
 	return (size_t)SERIAL_OBJ.write(bytes, len);
 }
 
-} /* extern "C" */
+Eh_printf_sys_context_end_C_functions
+#undef Eh_printf_sys_context_end_C_functions

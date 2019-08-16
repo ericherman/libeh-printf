@@ -23,7 +23,11 @@ License (COPYING) along with this library; if not, see:
 #define EH_PRINTF_SYS_CONTEXT
 
 #ifdef __cplusplus
-extern "C" {
+#define Eh_printf_sys_context_begin_C_functions extern "C" {
+#define Eh_printf_sys_context_end_C_functions }
+#else
+#define Eh_printf_sys_context_begin_C_functions
+#define Eh_printf_sys_context_end_C_functions
 #endif
 
 #if HAVE_CONFIG_H
@@ -34,6 +38,8 @@ extern "C" {
 #include <stddef.h>
 #endif
 
+Eh_printf_sys_context_begin_C_functions
+#undef Eh_printf_sys_context_begin_C_functions
 /* not all systems have separate OUT and ERR */
 extern int EH_PRINTF_SYSOUT_FILENO;
 extern int EH_PRINTF_SYSERR_FILENO;
@@ -53,8 +59,6 @@ size_t eh_sys_output_char(struct eh_printf_context_s *ctx, char c);
 size_t eh_sys_output_str(struct eh_printf_context_s *ctx, const char *str,
 			 size_t len);
 
-#ifdef __cplusplus
-}
-#endif
-
+Eh_printf_sys_context_end_C_functions
+#undef Eh_printf_sys_context_end_C_functions
 #endif /* EH_PRINTF_SYS_CONTEXT */
