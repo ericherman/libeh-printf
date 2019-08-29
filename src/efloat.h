@@ -1,15 +1,7 @@
-/*
-efloat.h: Embedable Float manipulation library
-Copyright (C) 2017, 2018 Eric Herman
-
-https://github.com/ericherman/libefloat
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later
-version.
-*/
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+/* efloat.h: Embedable Float manipulation library */
+/* Copyright (C) 2017, 2018, 2019 Eric Herman */
+/* https://github.com/ericherman/libefloat */
 
 /*
 Assuming IEEE 754 (radix 2), transforming the exponent is a bit tricky, but
@@ -252,7 +244,7 @@ struct efloat64_fields {
 Efloat_begin_C_functions
 /* first the efloat32 functions */
 #if efloat32_exists
-    efloat32 uint32_bits_to_efloat32(uint32_t i);
+efloat32 uint32_bits_to_efloat32(uint32_t i);
 uint32_t efloat32_to_uint32_bits(efloat32 f);
 #if (!SKIP_EFLOAT_SIGNED_INTS)
 efloat32 int32_bits_to_efloat32(int32_t i);

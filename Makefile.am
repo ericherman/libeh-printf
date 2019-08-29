@@ -94,7 +94,7 @@ tidy:
 		-T uint8_t -T uint16_t -T uint32_t -T uint64_t \
 		-T int8_t -T int16_t -T int32_t -T int64_t \
 		-T eh_printf_context_s \
-		-T efloat_class \
+		-T efloat32 -T efloat64 -T efloat_class \
 		`find src tests -name '*.h' -o -name '*.c' -o -name '*.cpp'`
 
 spotless: clean
