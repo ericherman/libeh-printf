@@ -1,4 +1,9 @@
 #                                               -*- Autoconf -*-
+# SPDX-License-Identifier: LGPL-2.1-or-later
+# configure.ac
+# Copyright (C) 2016, 2019 Eric Herman
+# https://github.com/ericherman/libeh-printf
+
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])

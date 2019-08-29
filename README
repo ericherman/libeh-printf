@@ -1,5 +1,5 @@
 eh-printf - A version of sprintf for embedded applications
-Copyright (C) 2016 Eric Herman
+Copyright (C) 2016, 2019 Eric Herman
 
 I discovered that adding the normal glibc sprintf to my embedded
 projects was resulting in a firmware which was too large. This

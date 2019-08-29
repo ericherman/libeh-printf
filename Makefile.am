@@ -1,3 +1,8 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+# Makefile.am
+# Copyright (C) 2016, 2019 Eric Herman
+# https://github.com/ericherman/libeh-printf
+
 lib_LTLIBRARIES=libeh-printf.la
 libeh_printf_la_SOURCES=\
  config.h \
